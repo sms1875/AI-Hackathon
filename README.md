@@ -43,6 +43,7 @@
 | [TECH-SPEC](docs/TECH-SPEC.md) | 기술 사양서 (패키지 구조, DB 스키마, API 스펙, Docker 구성) |
 | [DATA-FLOW](docs/DATA-FLOW.md) | 데이터 흐름 (크롤링 파이프라인, AI 분석, 이미지 서빙 등) |
 | [REVIEW](docs/REVIEW.md) | PRD·ROADMAP 정합성 검토, 리스크, 미결 사항 |
+| [BRANCH-STRATEGY](docs/BRANCH-STRATEGY.md) | 브랜치 전략 (master / sprint{n} / hotfix) |
 | [flow.md](docs/flow.md) | 작업 이력 |
 
 ## 개발 환경 설정

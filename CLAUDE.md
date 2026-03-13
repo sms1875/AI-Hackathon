@@ -90,7 +90,8 @@ description: 스킬 설명
   - 스프린트 첨부 파일 (스크린샷, 보고서 등): `docs/sprint/sprint{n}/`
 - sprint 개발이 plan 모드로 진행될 때는 다음을 꼭 준수합니다.
   - karpathy-guidelines skill을 준수하세요.
-  - sprint 가 새로 시작될 때는 새로 branch를 sprint{n} 이름으로 생성하고 해당 브랜치에서 작업해주세요. (worktree 사용하지 말아주세요)
+  - sprint 가 새로 시작될 때는 `master`에서 `sprint{n}` 브랜치를 생성하고 해당 브랜치에서 작업해주세요. (worktree 사용하지 말아주세요)
+  - 브랜치 전략 전체 규칙: `docs/BRANCH-STRATEGY.md` 참고
   - 다음과 같이 agent를 활용합니다.
     1. sprint-planner agent가 계획 수립 작업을 수행하도록 해주세요.
     2. 구현/검증 단계에서는 각 task의 내용에 따라 적절한 agent가 있는지 확인 한 후 적극 활용해주세요.

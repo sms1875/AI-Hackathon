@@ -211,6 +211,20 @@
 
 ---
 
+### 17. 브랜치 전략 정의 및 적용
+**요청:** 브랜치 전략 정의 및 적용
+
+**수행 작업:**
+- Option A (단순 전략) 선택: `master` / `sprint{n}` / `hotfix/{name}`
+- `docs/BRANCH-STRATEGY.md` 생성: 브랜치 구조, 워크플로우, 커밋 메시지 규칙, PR 규칙
+- `CLAUDE.md` 브랜치 전략 규칙 업데이트 (BRANCH-STRATEGY.md 참조 추가)
+- `README.md` 문서 목록에 BRANCH-STRATEGY 추가
+- GitHub `master` 브랜치 보호 규칙 적용 (force push 금지, 삭제 금지)
+
+**결과:** 브랜치 전략 문서화 및 GitHub 보호 규칙 적용 완료
+
+---
+
 ## 다음 예정 작업
 - ⬜ `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
 - ⬜ Sprint 1 구현 시작
