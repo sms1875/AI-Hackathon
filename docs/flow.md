@@ -159,8 +159,31 @@
 
 ---
 
+### 13. 커밋 및 푸시
+**요청:** 현재 상태 검토 후 이상 없으면 커밋 및 푸시
+
+**수행 작업:**
+- 전체 파일 검토 (PRD.md, ROADMAP.md, CLAUDE.md, flow.md)
+- `.claude/agent-memory/` 포함 여부 확인 → 포함으로 결정
+- `git add .` → 커밋 → `git push origin master`
+
+**결과:** `a0a57d7` 커밋 푸시 완료 — https://github.com/sms1875/AI-Hackathon
+
+---
+
+### 14. flow.md 정리 및 README 갱신 규칙 추가
+**요청:** 완료된 작업은 flow.md에서 정리, 커밋 시 README 항상 갱신 규칙 추가
+
+**수행 작업:**
+- `docs/flow.md` 다음 예정 작업 섹션 완료 항목 제거
+- `README.md` 프로젝트 실제 내용으로 전면 갱신
+- `CLAUDE.md`에 README 갱신 규칙 추가
+- 영구 메모리에 두 규칙 저장
+
+**결과:** flow.md 정리, README.md 갱신, 규칙 영속화 완료
+
+---
+
 ## 다음 예정 작업
-- ⬜ `docs/PRD.md` 작성 (만들 서비스 내용 결정 후)
-- ⬜ `prd-to-roadmap` 에이전트로 `docs/ROADMAP.md` 생성
 - ⬜ `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
-- ⬜ 스프린트 구현 시작
+- ⬜ Sprint 1 구현 시작

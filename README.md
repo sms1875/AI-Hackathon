@@ -1,59 +1,67 @@
-# choiji-guide
+# GamePaper AI
 
-Claude Code 에이전트 및 스킬 설정을 공유하기 위한 템플릿 레포지토리입니다.
+게임 공식 사이트의 배경화면을 AI로 자동 수집하여 모바일/데스크탑 기기에 적용하는 앱입니다.
 
-## 개요
+## 프로젝트 개요
 
-소규모 개발팀이 Claude Code를 활용하여 PRD 작성부터 스프린트 계획, 구현, 마무리까지 일관된 워크플로우로 개발할 수 있도록 에이전트와 스킬을 정의합니다.
+기존 [GamePaper](https://github.com/sms1875/GamePaper) 앱을 리팩토링하고 AI 기능을 추가합니다.
 
-## 사용 방법
+- **AI 범용 크롤러**: 게임 URL만 등록하면 Claude AI가 페이지를 분석하여 파싱 전략을 자동 생성
+- **환경 독립 아키텍처**: 로컬 PC에서 시작하여 클라우드로 전환 가능한 추상화 설계
+- **Admin Dashboard**: 웹 UI에서 게임 등록, 배경화면 현황, 크롤링 상태 관리
+- **멀티플랫폼**: Flutter 기반 Android → 데스크탑(Windows/macOS/Linux) 확장 예정
 
-이 레포지토리의 `.claude/` 디렉토리를 여러분의 프로젝트에 복사하세요.
+## 기술 스택
+
+| 구분 | 기술 |
+|------|------|
+| 모바일/데스크탑 앱 | Flutter (Dart) |
+| 백엔드 | Spring Boot 3.x (Java 21) |
+| 크롤링 | Selenium + Jsoup |
+| AI | Claude API (Anthropic) |
+| DB (Phase 1) | SQLite |
+| 스토리지 (Phase 1) | 로컬 파일 시스템 |
+| 배포 | Docker Compose + GitHub Actions |
+
+## 개발 로드맵
+
+| Phase | 내용 | 상태 |
+|-------|------|------|
+| Phase 1 | 인프라 기초 (DB/스토리지 추상화, Docker) | 📋 예정 |
+| Phase 2 | AI 범용 크롤러 + 관리자 페이지 | 📋 예정 |
+| Phase 3 | 리팩토링 (캐시, 에러 처리, 테스트) | 📋 예정 |
+| Phase 4 | 멀티플랫폼 확장 (데스크탑, 해상도별 추천) | 📋 예정 |
+
+전체 로드맵: [docs/ROADMAP.md](docs/ROADMAP.md)
+
+## 문서
+
+- [PRD (제품 요구사항 문서)](docs/PRD.md)
+- [ROADMAP](docs/ROADMAP.md)
+- [진행 흐름 (flow.md)](docs/flow.md)
+
+## 개발 환경 설정
+
+> Sprint 1 완료 후 업데이트 예정
 
 ```bash
-cp -r .claude/ /path/to/your-project/.claude/
+# 서버 실행 (Docker)
+docker compose up
+
+# 앱 실행 (Flutter)
+cd client
+flutter run
 ```
 
-복사 후, 각 에이전트 파일(`.claude/agents/*.md`)의 frontmatter에 절대 경로가 없는지 확인하세요. `memory: project` 설정이 런타임에 올바른 경로를 자동으로 주입합니다.
+## Claude Code 설정
 
-## 포함된 에이전트
+이 레포지토리는 Claude Code 에이전트/스킬을 포함합니다.
 
-| 에이전트 | 설명 |
-|----------|------|
-| `prd-to-roadmap` | `docs/PRD.md`를 분석하여 Agile 기반 `docs/ROADMAP.md`를 생성합니다. Playwright MCP 검증 시나리오를 각 Phase에 포함합니다. |
-| `sprint-planner` | ROADMAP을 기반으로 스프린트 계획을 수립하고 `docs/sprint/sprint{N}.md`에 저장합니다. |
-| `sprint-close` | 스프린트 완료 후 ROADMAP 상태 업데이트, PR 생성, 코드 리뷰, 자동 검증을 순서대로 처리합니다. |
-| `code-reviewer` | 구현 완료된 코드를 계획 문서와 비교하여 Critical/Important/Suggestion 등급으로 이슈를 분류합니다. |
-
-## 포함된 스킬
-
-| 스킬 | 설명 |
-|------|------|
-| `writing-plans` | 기능 구현 전 단계별 실행 계획을 `docs/plans/YYYY-MM-DD-<feature>.md`에 작성합니다. TDD 기반으로 각 태스크를 2~5분 단위로 분해합니다. |
-| `karpathy-guidelines` | 과도한 추상화, 불필요한 기능 추가, 외과적이지 않은 코드 변경을 방지하는 LLM 코딩 가이드라인입니다. |
-
-## 스프린트 워크플로우
-
-```
-docs/PRD.md
-    │
-    ▼ prd-to-roadmap 에이전트
-docs/ROADMAP.md
-    │
-    ▼ sprint-planner 에이전트
-docs/sprint/sprint{N}.md
-    │
-    ▼ 구현 (writing-plans 스킬 → 코드 작성)
-    │
-    ▼ sprint-close 에이전트
-    ├─ ROADMAP.md 상태 업데이트
-    ├─ sprint{N} → main PR 생성
-    ├─ code-reviewer subagent 코드 리뷰
-    ├─ Playwright MCP 자동 검증
-    └─ docs/sprint/sprint{N}/playwright-report.md 저장
-```
-
-## 전제 조건
-
-- [Claude Code](https://claude.ai/code) 설치
-- Playwright MCP 서버 설정 (UI 자동 검증 사용 시)
+| 에이전트/스킬 | 역할 |
+|--------------|------|
+| `prd-to-roadmap` | PRD → ROADMAP 자동 생성 |
+| `sprint-planner` | 스프린트 계획 수립 |
+| `sprint-close` | 스프린트 마무리 (PR, 코드 리뷰, 검증) |
+| `code-reviewer` | 코드 리뷰 (Critical/Important/Suggestion) |
+| `writing-plans` | 구현 전 단계별 계획 작성 |
+| `karpathy-guidelines` | LLM 코딩 실수 방지 가이드라인 |
