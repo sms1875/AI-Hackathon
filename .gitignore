@@ -3,3 +3,10 @@
 
 # macOS
 .DS_Store
+
+# Gradle
+server/.gradle/
+server/build/
+server/*.db
+server/storage/
+server/.env
