@@ -247,6 +247,18 @@
 
 ---
 
+### 19. Sprint 1 브랜치 생성 및 스프린트 계획 수립
+**요청:** sprint1 브랜치 생성 후 스프린트 계획 수립
+
+**수행 작업:**
+- `git checkout -b sprint1` → `git push -u origin sprint1` 브랜치 생성
+- `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
+  - 목표: Spring Boot 인프라 추상화 + Docker 환경 구축
+  - 태스크: S1-1 ~ S1-5 세부 구현 계획, 의존성 순서, 검증 명령어 포함
+
+**결과:** `docs/sprint/sprint1.md` 생성 완료
+
+---
+
 ## 다음 예정 작업
-- ⬜ `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
-- ⬜ Sprint 1 구현 시작
+- ⬜ Sprint 1 구현 시작 (S1-1 → S1-2 → S1-3 → S1-4 → S1-5 순서)
