@@ -54,10 +54,20 @@ curl -I http://localhost:8080/storage/images/1/test.jpg
 # 예상: HTTP/1.1 200
 ```
 
+## 자동 검증 완료 항목
+
+- ✅ Gradle 빌드 성공 (`BUILD SUCCESSFUL`)
+- ✅ 단위/통합 테스트 8개 전체 통과
+  - `GameRepositoryTest` 2개 (저장/조회, 상태별 조회)
+  - `LocalStorageServiceTest` 4개 (업로드, 파일 저장, 삭제, URL 반환)
+  - `GameApiControllerTest` 2개 (빈 목록 반환, 데이터 등록 후 조회)
+- ✅ `GET /api/games` 빈 목록 반환 (MockMvc 검증)
+- ✅ LocalStorageService URL 생성 로직 검증 (단위 테스트)
+
 ## 수동 검증 필요 항목
 
 - ⬜ `docker compose up --build` 실행 후 서버 정상 기동 확인
-- ⬜ `curl http://localhost:8080/api/games` → `[]` 반환 확인
+- ⬜ `curl http://localhost:8080/api/games` → `[]` 반환 확인 (Docker 실행 후)
 - ⬜ SQLite DB 데이터 영속성 확인 (재시작 후 데이터 유지)
 - ⬜ WAL 모드 활성화 확인 (`PRAGMA journal_mode` → `wal`)
 - ⬜ 이미지 URL 접근 확인 (HTTP 200)
