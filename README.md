@@ -36,9 +36,14 @@
 
 ## 문서
 
-- [PRD (제품 요구사항 문서)](docs/PRD.md)
-- [ROADMAP](docs/ROADMAP.md)
-- [진행 흐름 (flow.md)](docs/flow.md)
+| 문서 | 설명 |
+|------|------|
+| [PRD](docs/PRD.md) | 제품 요구사항 문서 (기능, AS-IS/TO-BE, API 설계) |
+| [ROADMAP](docs/ROADMAP.md) | 4 Phase, 8 Sprint 개발 로드맵 |
+| [TECH-SPEC](docs/TECH-SPEC.md) | 기술 사양서 (패키지 구조, DB 스키마, API 스펙, Docker 구성) |
+| [DATA-FLOW](docs/DATA-FLOW.md) | 데이터 흐름 (크롤링 파이프라인, AI 분석, 이미지 서빙 등) |
+| [REVIEW](docs/REVIEW.md) | PRD·ROADMAP 정합성 검토, 리스크, 미결 사항 |
+| [flow.md](docs/flow.md) | 작업 이력 |
 
 ## 개발 환경 설정
 

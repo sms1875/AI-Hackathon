@@ -184,6 +184,33 @@
 
 ---
 
+### 15. ROADMAP 기간 표기 제거
+**요청:** 전체 예상 기간(약 16주) 등 기간 명시 제거, 스프린트 단위로만 표기
+
+**수행 작업:**
+- `docs/ROADMAP.md` 수정:
+  - `전체 예상 기간: 8 스프린트 (약 16주)` → `전체 스프린트: 8 스프린트`
+  - Sprint 1~8 헤더에서 `(2주)` 제거
+  - 마일스톤 테이블 `(N주차)` 제거, `예상 시점` → `목표 스프린트`
+  - `기준일` 항목 제거
+
+**결과:** `docs/ROADMAP.md` 기간 표기 전면 제거 완료
+
+---
+
+### 16. 기술사양·데이터흐름·검토 문서 추가
+**요청:** PRD, ROADMAP 검토, 기술사양, 데이터흐름 등 추가 문서 작성
+
+**수행 작업:**
+- `docs/TECH-SPEC.md` 생성: 패키지 구조, DB 스키마, StorageService 인터페이스, 파싱 전략 JSON 스키마, API 스펙, 환경변수, Docker Compose, 성능/보안 고려사항
+- `docs/DATA-FLOW.md` 생성: 게임 등록/AI 분석 흐름, 크롤링 파이프라인, AI 태그 생성, Flutter 앱 조회, AI 추천, 이미지 서빙, 데이터 생명주기, 오류 처리 흐름
+- `docs/REVIEW.md` 생성: PRD↔ROADMAP 정합성 검토, 미결 사항 권고, 리스크 분석, Sprint 의존성, DoD 체크리스트, Phase 1 진입 전 체크리스트
+- `README.md` 문서 목록 업데이트
+
+**결과:** 핵심 문서 5종 완비 (PRD, ROADMAP, TECH-SPEC, DATA-FLOW, REVIEW)
+
+---
+
 ## 다음 예정 작업
 - ⬜ `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
 - ⬜ Sprint 1 구현 시작
