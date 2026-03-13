@@ -260,5 +260,41 @@
 
 ---
 
+### 20. Sprint 1 구현 완료
+**요청:** Sprint 1 구현 (S1-1 ~ S1-5)
+
+**수행 작업:**
+- S1-1: Spring Boot 3.x + Java 21 프로젝트 초기화 (Gradle, 프로파일 설정)
+- S1-2: StorageService 추상화 인터페이스 + LocalStorageService 구현
+- S1-3: Game/Wallpaper/CrawlingLog JPA 엔티티 + Repository + SQLite WAL 설정
+- S1-4: `GET /api/games`, `GET /api/wallpapers/{gameId}` REST API 구현
+- S1-5: 멀티스테이지 Dockerfile + docker-compose.yml + deploy.md 작성
+- 8개 단위/통합 테스트 작성 및 전체 통과 확인
+
+**결과:** `BUILD SUCCESSFUL` — 8 tests passed
+
+---
+
+### 21. Sprint 1 마무리 (sprint-close)
+**요청:** Sprint 1 마무리 작업 수행 (ROADMAP 업데이트, PR 생성, 코드 리뷰, 검증 보고서)
+
+**수행 작업:**
+- `git push origin sprint1` — 로컬 커밋 6개 원격 푸시
+- `docs/ROADMAP.md` — Sprint 1 작업 전체 `📋` → `✅`, 진행률 0% → 12% 업데이트
+- GitHub PR 생성: https://github.com/sms1875/AI-Hackathon/pull/1 (sprint1 → master)
+- `docs/sprint/sprint1/code-review.md` 작성: Critical 0, Important 3, Suggestion 3
+- `docs/sprint/sprint1/validation-report.md` 작성: 자동 검증 결과 및 수동 검증 항목
+- `docs/sprint/sprint1.md` 검증 결과 링크 추가
+- `server/deploy.md` 자동/수동 검증 항목 구분 업데이트
+- `README.md` Phase 1 진행 중 상태 반영, 개발 환경 설정 상세화
+
+**결과:**
+- PR: https://github.com/sms1875/AI-Hackathon/pull/1
+- 검증 보고서: `docs/sprint/sprint1/validation-report.md`
+- 코드 리뷰: `docs/sprint/sprint1/code-review.md`
+
+---
+
 ## 다음 예정 작업
-- ⬜ Sprint 1 구현 시작 (S1-1 → S1-2 → S1-3 → S1-4 → S1-5 순서)
+- ⬜ PR #1 머지 (수동 검증 완료 후)
+- ⬜ Sprint 2 계획 수립 (기존 크롤러 마이그레이션 + 클라이언트 연결)
