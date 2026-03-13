@@ -225,6 +225,28 @@
 
 ---
 
+### 18. PRD·ROADMAP 검토 및 수정
+**요청:** 스프린트 시작 전 PRD, ROADMAP, karpathy-guidelines 반영 여부 검토 및 수정
+
+**수행 작업:**
+- PRD 수정 (5개 이슈):
+  - 섹션 9 미결 사항 → 결정된 내용 반영 (HTML+스크린샷, 자동+수동 재분석, Provider 유지)
+  - CI/CD 브랜치 `main` → `master` 수정
+  - Admin UI 인증 Won't Have 범위 명시
+  - 라이브 배경화면 Could Have → Won't Have 통일
+  - API 경로 `{game}` → `{gameId}` 수정
+- ROADMAP 수정 (6개 이슈):
+  - 대시보드 `4 (8 스프린트)` → `4`
+  - S1-2 `listFiles()` → Sprint 3으로 이동 (Simplicity First)
+  - Sprint 1 DoD에 WAL 모드 확인 항목 추가
+  - S2-1 CrawlerScheduler 분리 및 Sprint 4 재활용 관계 명시
+  - Sprint 2 검증 시나리오 — 존재하지 않는 크롤링 트리거 API 제거
+  - S5-3 UserLike 엔티티 생성 태스크 추가
+
+**결과:** PRD·ROADMAP 정합성 확보, Karpathy 가이드라인 반영 완료
+
+---
+
 ## 다음 예정 작업
 - ⬜ `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
 - ⬜ Sprint 1 구현 시작

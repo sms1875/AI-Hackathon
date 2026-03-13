@@ -117,7 +117,7 @@ GameRepository (interface)
 
 ### CI/CD
 
-- **GitHub Actions**: main 브랜치 push 시 빌드 + 테스트 자동 실행
+- **GitHub Actions**: master 브랜치 PR 병합 시 빌드 + 테스트 자동 실행
 - Phase 1: 로컬 실행 (Actions는 빌드/테스트만 수행)
 - Phase 2+: Actions에서 클라우드 서버로 배포 (SSH 또는 Docker 방식)
 - Docker Compose로 로컬/클라우드 환경 통일
@@ -283,10 +283,10 @@ Thymeleaf 기반 웹 UI, 4개 페이지 구성.
   - 예: "파란 하늘 아래 펼쳐진 몬드 도시 전경"
 - DB에 저장, 클라이언트 상세 화면에 표시
 
-#### [기능] 라이브 배경화면 (Could Have - 복잡도 높음)
-- 1단계: 이미지 슬라이드쇼 (일정 주기 자동 교체)
-- 2단계: Android `WallpaperService` 기반 라이브 배경화면
-- Windows: DreamScene 방식 (구현 복잡도 높음, 우선순위 낮음)
+#### [기능] 라이브 배경화면 (Won't Have - 이번 릴리스)
+- MVP 이후 재평가
+- 1단계 후보: 이미지 슬라이드쇼 (일정 주기 자동 교체)
+- 2단계 후보: Android `WallpaperService` 기반 라이브 배경화면
 
 #### [기능] 기타 (Could Have)
 - 신규 게임 추가 (블루 아카이브, 붕괴3rd 등) — Admin UI에서 URL 등록만으로 가능
@@ -333,7 +333,7 @@ push to main
 | AI 추천 응답 | 3초 이내 |
 | 이미지 URL | 만료 없는 영구 URL |
 | 환경 이식성 | properties 파일 교체만으로 로컬 ↔ 클라우드 전환 가능 |
-| 보안 | API Key 환경변수 관리, Admin UI 인증 |
+| 보안 | API Key 환경변수 관리, Admin UI 인증 (Phase 1: IP 제한 또는 Basic Auth, 복잡한 인증은 Won't Have) |
 | 플랫폼 | Android (Phase 1~3) → Windows/macOS/Linux 추가 (Phase 4) |
 
 ---
@@ -344,7 +344,7 @@ push to main
 | 엔드포인트 | 설명 |
 |-----------|------|
 | `GET /api/games` | 게임 목록 조회 |
-| `GET /api/wallpapers/{game}` | 게임별 배경화면 목록 (tags, description 포함) |
+| `GET /api/wallpapers/{gameId}` | 게임별 배경화면 목록 (tags, description 포함) |
 | `GET /api/wallpapers/search?tags=dark,landscape` | 태그 기반 검색 |
 | `GET /api/wallpapers/recommended` | AI 추천 배경화면 목록 |
 | `POST /api/wallpapers/{id}/like` | 좋아요 |
@@ -367,19 +367,23 @@ push to main
 
 ---
 
-## 9. 미결 사항
+## 9. 결정 사항 및 미결 사항
 
-**AI 크롤러**
-- [ ] AI 분석 방식: HTML 텍스트만 전달 vs Selenium 스크린샷도 함께 전달
-- [ ] 파싱 전략 실패 시 재분석: 자동 트리거 vs 관리자 수동
+**AI 크롤러 (결정 완료)**
+- [x] AI 분석 방식: **HTML + Selenium 스크린샷 함께 전달** — 동적 렌더링 페이지는 스크린샷 없이 전략 생성 정확도 낮음 (S4-1 반영)
+- [x] 파싱 전략 실패 시 재분석: **자동(3회 연속 실패) + 관리자 수동 병행** (S4-4 반영)
 
-**인프라**
-- [ ] Flutter 상태관리: Provider 유지 vs Riverpod 마이그레이션
+**인프라 (결정 완료)**
+- [x] Flutter 상태관리: **Provider 유지** — 리팩토링 비용 대비 이득 불명확, Phase 4 이후 재검토
+
+**인프라 (미결 — Phase 2+ 시점에 결정)**
 - [ ] Phase 2+ 클라우드 서버 플랫폼 (AWS EC2 / Railway / Render 등)
 - [ ] Phase 2+ DB (PostgreSQL / Firestore 등)
 - [ ] Phase 2+ 이미지 스토리지 (S3 / Firebase Storage / R2 등)
 
-**멀티플랫폼**
-- [ ] 데스크탑 배경화면 설정 라이브러리 (Win32 직접 호출 vs 서드파티 플러그인)
-- [ ] 라이브 배경화면 구현 방식 및 우선순위
-- [ ] 추가할 게임 목록 확정 (블루 아카이브, 붕괴3rd 등)
+**멀티플랫폼 (결정 완료)**
+- [x] 데스크탑 배경화면 설정: **Win32 직접 호출 우선** (Windows → macOS → Linux 순서)
+- [x] 라이브 배경화면: **Won't Have (이번 릴리스)** — 복잡도 높음, MVP 이후 재평가
+
+**멀티플랫폼 (미결)**
+- [ ] 추가할 게임 목록 확정 (블루 아카이브, 붕괴3rd 등) — AI 크롤러 완성 후 URL 등록만으로 가능
