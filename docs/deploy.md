@@ -4,6 +4,19 @@
 
 ---
 
+## Sprint 6 배포 가이드
+
+### 주요 변경 사항
+
+- **에러 응답 표준화**: `GlobalExceptionHandler` + `ErrorCode` + `ErrorResponse` 추가 — 모든 API 에러가 `{ "error": { "code": "...", "message": "..." } }` 형태로 반환됩니다.
+- **컨트롤러 분리**: `WallpaperLikeApiController` (좋아요), `WallpaperRecommendApiController` (추천) 신규 분리
+- **WallpaperSearchService**: `ObjectMapper` static 상수화, `findAllTagged(Pageable)` 500건 배치 처리
+- **Flutter 구조화 에러 처리**: `AppError` 클래스 + `AppErrorType` enum, 서버 에러 코드 매핑
+- **Flutter 영속 캐시**: `LocalCache` (SharedPreferences TTL 기반) — 게임 목록 1시간 캐시, 배경화면 페이지별 캐시
+- **Flutter 무한 스크롤**: `WallpaperScreen` PageView → GridView + ScrollController, 12개씩 추가 로드
+
+---
+
 ## Sprint 5 배포 가이드
 
 ### 추가된 환경변수
@@ -128,6 +141,25 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
 - ✅ LocalStorageService.listFiles() 구현 (Sprint 1 미구현 항목 완성)
 - ✅ Thymeleaf 관리자 UI 4페이지 구현 (/admin, /admin/games, /admin/games/new, /admin/games/{id})
 
+### Sprint 6 (신규)
+
+- ✅ `./gradlew test --no-daemon --rerun-tasks` — BUILD SUCCESSFUL
+- ✅ 전체 서버 테스트 50개 PASS (0 failures, 0 errors)
+- ✅ WallpaperSearchServiceTest 8개 PASS (AND/OR 검색, null/빈 태그, JSON 파싱, 태그 빈도 분석)
+- ✅ RecommendationServiceTest 4개 PASS (좋아요 이력, 태그 기반 추천, 중복 제외)
+- ✅ WallpaperApiControllerTest 3개 PASS (페이지 조회, 404 에러, 페이지 파라미터)
+- ✅ ClaudeApiClientTest 2개 PASS (API 키 미설정 예외 검증)
+- ✅ ErrorResponseTest 2개 PASS (404/400 구조화 에러 응답)
+- ✅ WallpaperSearchService ObjectMapper static 상수화 완료 (I-1 해소)
+- ✅ WallpaperRepository.findAllTagged(Pageable) 추가 (I-2 부분 해소)
+- ✅ WallpaperLikeApiController / WallpaperRecommendApiController 분리 완료 (I-3 해소)
+- ✅ GlobalExceptionHandler + ErrorCode + ErrorResponse 구현
+- ✅ flutter analyze — 신규 파일 에러 없음
+- ✅ Flutter AppError 구조화 에러 처리 구현
+- ✅ Flutter LocalCache (SharedPreferences TTL 기반) 구현
+- ✅ Flutter WallpaperProvider 무한 스크롤 구현
+- ✅ Flutter WallpaperScreen GridView + ScrollController 전환
+
 ### Sprint 5 (신규)
 
 - ✅ Gradle compileJava + compileTestJava BUILD SUCCESSFUL (sprint-close 자동 실행)
@@ -167,6 +199,46 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
 ---
 
 ## 수동 검증 필요 항목
+
+### Sprint 6 수동 검증 항목
+
+#### Docker 재빌드
+
+- ⬜ `docker compose up --build` — Sprint 6 코드 반영 후 서버 정상 기동
+  ```bash
+  cd server/
+  docker compose up --build
+  # 확인: "Started GamepaperApplication" 로그 출력
+  ```
+
+#### 에러 응답 표준화 확인
+
+- ⬜ 존재하지 않는 게임 조회 → 구조화된 404 응답 확인
+  ```bash
+  curl -s http://localhost:8080/api/games/99999 | python -m json.tool
+  # 예상: {"error": {"code": "GAME_NOT_FOUND", "message": "..."}}
+  ```
+
+- ⬜ device-id 없이 좋아요 요청 → 400 구조화 에러 응답 확인
+  ```bash
+  curl -s -X POST http://localhost:8080/api/wallpapers/1/like | python -m json.tool
+  # 예상: {"error": {"code": "MISSING_DEVICE_ID", "message": "..."}}
+  ```
+
+- ⬜ 배경화면 페이지 조회
+  ```bash
+  curl -s "http://localhost:8080/api/wallpapers/1?page=0&size=12" | python -m json.tool
+  # 예상: content 배열 + totalPages, currentPage 포함
+  ```
+
+#### Flutter 앱 UI 시각적 확인
+
+- ⬜ 오프라인 상태에서 앱 실행 → 오프라인 배너 표시 확인
+- ⬜ 앱 재시작 시 게임 목록 즉시 표시 (SharedPreferences 캐시) 확인
+- ⬜ 배경화면 목록 하단 스크롤 → 무한 스크롤 추가 로드 동작 확인
+- ⬜ 서버 에러 시 AppError 기반 사용자 메시지 표시 확인
+
+---
 
 ### Docker 환경 검증
 

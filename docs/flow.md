@@ -689,7 +689,7 @@
 
 ## 2026-03-15
 
-### N. Sprint 6 서버 Task 1~6 구현
+### 39. Sprint 6 서버 Task 1~6 구현
 **요청:** Sprint 6 서버 Task 1~6을 순서대로 구현해달라 (각 Task 완료 후 git commit)
 
 **수행 작업:**
@@ -725,5 +725,26 @@
 - 전체 서버 테스트 50개 모두 PASS (BUILD SUCCESSFUL)
 - 커밋 6개 생성 (sprint6 브랜치)
 - 신규/수정 파일: WallpaperSearchService, WallpaperRepository, WallpaperApiController, WallpaperLikeApiController, WallpaperRecommendApiController, error/ 패키지 3개, 테스트 6개
+
+---
+
+### 40. Sprint 6 마무리 (sprint-close)
+**요청:** Sprint 6 마무리 작업 수행 (ROADMAP 업데이트, 빌드 검증, 코드 리뷰, 검증 보고서, PR 생성)
+
+**수행 작업:**
+- `./gradlew test --no-daemon --rerun-tasks` — BUILD SUCCESSFUL, 50개 테스트 전체 PASS
+- docs/ROADMAP.md Sprint 6 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 62% → 75% 갱신, M4 마일스톤 달성
+- docs/sprint/sprint6/code-review.md 작성 (Critical 0, Important 2, Suggestion 3)
+- docs/sprint/sprint6/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint6.md 검증 결과 링크 추가
+- docs/deploy.md Sprint 6 배포 가이드 및 자동/수동 검증 항목 추가
+- README.md Phase 3 완료 상태 반영
+- GitHub PR 생성: sprint6 → master
+
+**결과:**
+- 빌드 검증: BUILD SUCCESSFUL (50개 테스트 PASS)
+- 검증 보고서: docs/sprint/sprint6/validation-report.md
+- 코드 리뷰: docs/sprint/sprint6/code-review.md
+- M4 마일스톤(안정화 완료) 달성
 
 ---
