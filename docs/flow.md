@@ -791,3 +791,45 @@
 **결과:** 커밋 4b9d2ae "docs: 프로젝트 최종 정리 - README, deploy.md, server README" 푸시 완료. 프로젝트 최종 마무리.
 
 ---
+
+### 45. CI/CD 강화 — JaCoCo 커버리지, 관리자 UI 테스트, Docker 빌드 CI 추가
+**요청:** 해커톤 평가 CI/CD 자동화 감점(-7/7) 개선을 위해 JaCoCo, 관리자 UI 테스트, Docker 빌드 CI 추가
+
+**수행 작업:**
+- `server/build.gradle` — `id 'jacoco'` 플러그인 추가, `jacoco { toolVersion }`, `jacocoTestReport`, `jacocoTestCoverageVerification(50%)` 블록 추가, 기존 `tasks.named('test')` 블록에 `finalizedBy jacocoTestReport` 추가
+- `server/src/test/java/com/gamepaper/admin/AdminDashboardControllerTest.java` — 관리자 대시보드 @WebMvcTest 2건 생성 (200 응답, 모델 통계 검증)
+- `server/src/test/java/com/gamepaper/admin/AdminGameControllerTest.java` — 게임 목록/등록폼/상세/404/400 @WebMvcTest 6건 생성
+- `.github/workflows/ci.yml` — `jacocoTestReport` 실행, 커버리지 XML 아티팩트 업로드, GitHub Step Summary 커버리지 출력, `docker-build` job(needs: build-and-test) 추가
+- `README.md` — 첫 `#` 제목 아래 CI 배지(`[![CI](...)]`) 추가
+
+**결과:**
+- JaCoCo 0.8.11 커버리지 리포트 (XML + HTML) CI에서 자동 생성
+- 관리자 UI MockMvc 테스트 8건 추가 (총 ~58건 예상)
+- Docker 이미지 빌드 검증 CI job 추가
+- README.md에 CI 상태 배지 표시
+
+---
+
+## 2026-03-16
+
+### 44. GamePaper AI 프로젝트 종합 검증
+**요청:** Sprint 1~6 완료 상태에서 Phase 1~3 전체 종합 검증 수행 (코드 정적 검증, 빌드/테스트, API 동작, 문서, CI/CD)
+
+**수행 작업:**
+- 코드 정적 검증: Java 소스 58개(main) + 15개(test) 파일 구조 분석
+- 주요 클래스 구현 확인: GamepaperApplication, ClaudeApiClient, AnalysisService, GenericCrawlerExecutor, GlobalExceptionHandler, StorageService
+- 테스트 코드 확인: 15개 테스트 클래스, 50개 테스트 메서드 목록 검증
+- 빌드 환경 확인: docker 명령어 미접근 환경 (Sprint 6 자동 검증 기록 참조)
+- 문서 검증: README.md, docs/deploy.md, server/README.md, docs/ROADMAP.md, Sprint 1~6 계획 문서 전체 확인
+- CI/CD 검증: `.github/workflows/ci.yml` 구성 검토
+- 검증 보고서 작성: `docs/sprint/sprint6/validation-report.md` 갱신 (기존 파일 업데이트)
+
+**결과:**
+- 코드 정적 검증: ✅ 통과 — 주요 클래스 전체 설계 의도대로 구현 확인
+- 빌드/테스트: ⬜ 수동 필요 — Docker 미실행 환경. Sprint 6 당시 BUILD SUCCESSFUL 50개 PASS 기록 보유
+- API 동작 검증: ⬜ 수동 필요 — Docker 실행 후 `curl` 명령으로 검증 필요
+- 문서 검증: ✅ 통과 — 6개 스프린트 문서, README, deploy.md, ROADMAP 모두 충실
+- CI/CD 검증: ✅ 통과 — GitHub Actions 워크플로우 올바르게 구성됨
+- 종합 검증 보고서: `docs/sprint/sprint6/validation-report.md`
+
+---
