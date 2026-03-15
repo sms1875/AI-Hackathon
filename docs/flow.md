@@ -524,7 +524,7 @@
 - 빌드 검증: BUILD SUCCESSFUL (compileJava, compileTestJava)
 - 검증 보고서: docs/sprint/sprint4/validation-report.md
 - 코드 리뷰: docs/sprint/sprint4/code-review.md
-- PR: (하단 참고)
+- PR: https://github.com/sms1875/AI-Hackathon/pull/4
 
 ---
 
