@@ -348,7 +348,7 @@
 - README.md Phase 1 완료 상태 반영
 
 **결과:**
-- PR: (생성 후 URL 기재)
+- PR: https://github.com/sms1875/AI-Hackathon/pull/2
 - 검증 보고서: docs/sprint/sprint2/validation-report.md
 - 코드 리뷰: docs/sprint/sprint2/code-review.md
 
