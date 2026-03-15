@@ -228,33 +228,29 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000
 
 ## 테스트 실행 방법
 
+> 상세 테스트 전략: [docs/TESTING.md](docs/TESTING.md)
+
 ### 서버 테스트
 
 ```bash
 cd server/
 
-# 전체 테스트 실행 (50개)
-./gradlew test
+# 전체 테스트 + JaCoCo 커버리지 리포트
+./gradlew test jacocoTestReport
 
 # Windows 환경
-gradlew.bat test
+gradlew.bat test jacocoTestReport
+# 커버리지 리포트: build/reports/jacoco/test/html/index.html
 ```
 
-주요 테스트 클래스:
+**64개 테스트** (단위 + API 통합 + JPA) — 3계층 구조:
 
-| 테스트 클래스 | 개수 | 내용 |
-|------------|------|------|
-| `WallpaperSearchServiceTest` | 8 | AND/OR 검색, JSON 파싱, 태그 빈도 분석 |
-| `RecommendationServiceTest` | 4 | 좋아요 이력, 태그 기반 추천, 중복 제외 |
-| `WallpaperApiControllerTest` | 3 | 페이지 조회, 404 에러, 페이지 파라미터 |
-| `ClaudeApiClientTest` | 2 | API 키 미설정 예외 검증 |
-| `ErrorResponseTest` | 2 | 구조화된 에러 응답 포맷 검증 |
-| `AdminAnalyzeApiControllerTest` | 2 | AI 분석 API, 데모 모드 |
-| `GameApiControllerTest` | 2 | 게임 목록 API |
-| `CrawlerStrategyParserTest` | 4 | JSON 파싱, 필수 필드 검증 |
-| `ImageProcessorTest` | 5 | BlurHash 생성, 해상도 추출, UUID 파일명 |
-| `GameRepositoryTest` | 2 | 저장/조회, 상태별 조회 |
-| `LocalStorageServiceTest` | 7 | 업로드, 삭제, URL 반환, 파일 목록 |
+| 계층 | 클래스 수 | 테스트 수 | 사용 기술 |
+|------|-----------|-----------|-----------|
+| API 통합 (`@SpringBootTest`) | 5 | 17 | 인메모리 SQLite, MockMvc |
+| 관리자 UI (`@WebMvcTest`) | 3 | 10 | MockMvc, @MockBean |
+| 단위 테스트 | 8 | 34 | Mockito, JUnit 5 |
+| JPA (`@DataJpaTest`) | 1 | 3 | 인메모리 SQLite |
 
 ### Flutter 코드 분석
 

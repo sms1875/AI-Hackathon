@@ -61,20 +61,33 @@ jobs:
         run: |
           REPORT=server/build/reports/jacoco/test/jacocoTestReport.xml
           if [ -f "$REPORT" ]; then
-            echo "### 테스트 커버리지 요약" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            MISSED=$(grep -oP 'type="INSTRUCTION"[^/]*/>' "$REPORT" | grep -oP 'missed="\K[0-9]+' | awk '{s+=$1} END {print s}')
-            COVERED=$(grep -oP 'type="INSTRUCTION"[^/]*/>' "$REPORT" | grep -oP 'covered="\K[0-9]+' | awk '{s+=$1} END {print s}')
+            # XML에서 INSTRUCTION 타입 counter 추출 (파일 전체 스캔)
+            MISSED=$(python3 -c "
+import xml.etree.ElementTree as ET
+tree = ET.parse('$REPORT')
+total_missed = sum(int(c.get('missed', 0)) for c in tree.iter('counter') if c.get('type') == 'INSTRUCTION')
+print(total_missed)
+")
+            COVERED=$(python3 -c "
+import xml.etree.ElementTree as ET
+tree = ET.parse('$REPORT')
+total_covered = sum(int(c.get('covered', 0)) for c in tree.iter('counter') if c.get('type') == 'INSTRUCTION')
+print(total_covered)
+")
             TOTAL=$((MISSED + COVERED))
             if [ "$TOTAL" -gt 0 ]; then
-              PCT=$(echo "scale=1; $COVERED * 100 / $TOTAL" | bc)
+              PCT=$(python3 -c "print(f'{$COVERED * 100 / $TOTAL:.1f}')")
+              TEST_COUNT=$(find server/src/test -name "*.java" -exec grep -l "@Test" {} \; | xargs grep -h "@Test" | wc -l)
+              echo "### 테스트 커버리지 요약" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
               echo "| 지표 | 값 |" >> $GITHUB_STEP_SUMMARY
               echo "|------|-----|" >> $GITHUB_STEP_SUMMARY
-              echo "| 전체 테스트 수 | $(grep -c '@Test' server/src/test/java/com/gamepaper/**/*.java 2>/dev/null || echo '50+') |" >> $GITHUB_STEP_SUMMARY
-              echo "| 커버된 명령어 | $COVERED |" >> $GITHUB_STEP_SUMMARY
-              echo "| 전체 명령어 | $TOTAL |" >> $GITHUB_STEP_SUMMARY
-              echo "| 커버리지 | $PCT% |" >> $GITHUB_STEP_SUMMARY
+              echo "| 테스트 메서드 수 | ${TEST_COUNT} |" >> $GITHUB_STEP_SUMMARY
+              echo "| 커버된 명령어 | ${COVERED} / ${TOTAL} |" >> $GITHUB_STEP_SUMMARY
+              echo "| 명령어 커버리지 | **${PCT}%** |" >> $GITHUB_STEP_SUMMARY
             fi
+          else
+            echo "⚠️ JaCoCo XML 리포트를 찾을 수 없습니다." >> $GITHUB_STEP_SUMMARY
           fi
 
   docker-build:
