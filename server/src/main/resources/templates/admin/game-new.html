@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+  <title>게임 등록 - GamePaper Admin</title>
+</head>
+<body>
+<main>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- 에러 메시지 -->
+      <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-white">
+          <h6 class="mb-0"><i class="bi bi-plus-circle me-2"></i>게임 등록</h6>
+        </div>
+        <div class="card-body">
+          <!-- 등록 폼 -->
+          <form id="gameForm" th:action="@{/admin/games/new}" method="post">
+            <div class="mb-3">
+              <label for="name" class="form-label fw-semibold">게임명 <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="name" name="name"
+                     placeholder="예: 원신, 메이플스토리" required>
+            </div>
+            <div class="mb-3">
+              <label for="url" class="form-label fw-semibold">배경화면 페이지 URL <span class="text-danger">*</span></label>
+              <input type="url" class="form-control" id="url" name="url"
+                     placeholder="https://example.com/wallpapers" required>
+              <div class="form-text">게임 공식 사이트의 배경화면 다운로드 페이지 URL을 입력하세요.</div>
+            </div>
+
+            <!-- AI 분석 섹션 -->
+            <hr>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">AI 파싱 전략 분석 <span class="badge bg-secondary">선택</span></label>
+              <div class="input-group">
+                <button type="button" id="btnAnalyze" class="btn btn-outline-secondary">
+                  <i class="bi bi-robot me-1"></i>AI 분석 시작
+                </button>
+                <span class="input-group-text text-muted small" id="analyzeStatus">
+                  URL 입력 후 AI 분석을 실행하면 파싱 전략이 자동 생성됩니다.
+                </span>
+              </div>
+            </div>
+
+            <!-- 분석 결과 진행 표시 (숨김) -->
+            <div id="analyzeProgress" class="mb-3 d-none">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="spinner-border spinner-border-sm text-primary" id="analyzeSpinner"></div>
+                <span id="analyzeProgressMsg" class="text-muted small">AI 분석 중...</span>
+              </div>
+            </div>
+
+            <!-- 파싱 전략 미리보기 (숨김 → AI 분석 완료 후 표시) -->
+            <div id="strategyPreview" class="mb-3 d-none">
+              <label class="form-label fw-semibold">파싱 전략 미리보기 (읽기 전용)</label>
+              <textarea id="strategyJson" class="form-control font-monospace" rows="10" readonly
+                        style="font-size: 0.85rem;"></textarea>
+              <div class="form-text text-success">
+                <i class="bi bi-check-circle me-1"></i>AI 분석이 완료되었습니다. 저장 후 크롤링을 시작합니다.
+              </div>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-1"></i>저장 (크롤링은 게임 상세 페이지에서 실행)
+              </button>
+              <a th:href="@{/admin/games}" class="btn btn-outline-secondary">취소</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const btnAnalyze = document.getElementById('btnAnalyze');
+    const analyzeStatus = document.getElementById('analyzeStatus');
+    const analyzeProgress = document.getElementById('analyzeProgress');
+    const analyzeProgressMsg = document.getElementById('analyzeProgressMsg');
+    const strategyPreview = document.getElementById('strategyPreview');
+    const strategyJson = document.getElementById('strategyJson');
+
+    btnAnalyze.addEventListener('click', function() {
+      const url = document.getElementById('url').value.trim();
+      if (!url) {
+        alert('URL을 먼저 입력해주세요.');
+        return;
+      }
+
+      btnAnalyze.disabled = true;
+      analyzeProgress.classList.remove('d-none');
+      strategyPreview.classList.add('d-none');
+      analyzeProgressMsg.textContent = 'AI가 페이지를 분석하는 중입니다... (최대 60초 소요)';
+
+      fetch('/admin/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+      .then(r => {
+        if (!r.ok) throw new Error('분석 실패: ' + r.status);
+        return r.json();
+      })
+      .then(data => {
+        analyzeProgress.classList.add('d-none');
+        strategyPreview.classList.remove('d-none');
+        strategyJson.value = JSON.stringify(data.strategy, null, 2);
+        analyzeStatus.textContent = '분석 완료';
+        btnAnalyze.disabled = false;
+      })
+      .catch(err => {
+        analyzeProgress.classList.add('d-none');
+        analyzeStatus.textContent = '분석 실패: ' + err.message;
+        btnAnalyze.disabled = false;
+      });
+    });
+  </script>
+</main>
+</body>
+</html>
