@@ -27,7 +27,7 @@
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
-| Phase 1 | 인프라 기초 (DB/스토리지 추상화, Docker) | 📋 예정 |
+| Phase 1 | 인프라 기초 (DB/스토리지 추상화, Docker) | 🔄 진행 중 (Sprint 1 완료) |
 | Phase 2 | AI 범용 크롤러 + 관리자 페이지 | 📋 예정 |
 | Phase 3 | 리팩토링 (캐시, 에러 처리, 테스트) | 📋 예정 |
 | Phase 4 | 멀티플랫폼 확장 (데스크탑, 해상도별 추천) | 📋 예정 |
@@ -48,13 +48,26 @@
 
 ## 개발 환경 설정
 
-> Sprint 1 완료 후 업데이트 예정
+### 서버 실행 (Docker)
 
 ```bash
-# 서버 실행 (Docker)
-docker compose up
+cd server/
 
-# 앱 실행 (Flutter)
+# 최초 실행 전 사전 준비
+touch gamepaper.db
+mkdir -p storage/images
+cp .env.example .env
+
+# 서버 빌드 및 실행
+docker compose up --build
+```
+
+서버 기동 후 `http://localhost:8080/api/games` 로 동작 확인.
+상세 가이드: [server/deploy.md](server/deploy.md)
+
+### 앱 실행 (Flutter)
+
+```bash
 cd client
 flutter run
 ```

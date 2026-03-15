@@ -225,6 +225,76 @@
 
 ---
 
+### 18. PRD·ROADMAP 검토 및 수정
+**요청:** 스프린트 시작 전 PRD, ROADMAP, karpathy-guidelines 반영 여부 검토 및 수정
+
+**수행 작업:**
+- PRD 수정 (5개 이슈):
+  - 섹션 9 미결 사항 → 결정된 내용 반영 (HTML+스크린샷, 자동+수동 재분석, Provider 유지)
+  - CI/CD 브랜치 `main` → `master` 수정
+  - Admin UI 인증 Won't Have 범위 명시
+  - 라이브 배경화면 Could Have → Won't Have 통일
+  - API 경로 `{game}` → `{gameId}` 수정
+- ROADMAP 수정 (6개 이슈):
+  - 대시보드 `4 (8 스프린트)` → `4`
+  - S1-2 `listFiles()` → Sprint 3으로 이동 (Simplicity First)
+  - Sprint 1 DoD에 WAL 모드 확인 항목 추가
+  - S2-1 CrawlerScheduler 분리 및 Sprint 4 재활용 관계 명시
+  - Sprint 2 검증 시나리오 — 존재하지 않는 크롤링 트리거 API 제거
+  - S5-3 UserLike 엔티티 생성 태스크 추가
+
+**결과:** PRD·ROADMAP 정합성 확보, Karpathy 가이드라인 반영 완료
+
+---
+
+### 19. Sprint 1 브랜치 생성 및 스프린트 계획 수립
+**요청:** sprint1 브랜치 생성 후 스프린트 계획 수립
+
+**수행 작업:**
+- `git checkout -b sprint1` → `git push -u origin sprint1` 브랜치 생성
+- `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
+  - 목표: Spring Boot 인프라 추상화 + Docker 환경 구축
+  - 태스크: S1-1 ~ S1-5 세부 구현 계획, 의존성 순서, 검증 명령어 포함
+
+**결과:** `docs/sprint/sprint1.md` 생성 완료
+
+---
+
+### 20. Sprint 1 구현 완료
+**요청:** Sprint 1 구현 (S1-1 ~ S1-5)
+
+**수행 작업:**
+- S1-1: Spring Boot 3.x + Java 21 프로젝트 초기화 (Gradle, 프로파일 설정)
+- S1-2: StorageService 추상화 인터페이스 + LocalStorageService 구현
+- S1-3: Game/Wallpaper/CrawlingLog JPA 엔티티 + Repository + SQLite WAL 설정
+- S1-4: `GET /api/games`, `GET /api/wallpapers/{gameId}` REST API 구현
+- S1-5: 멀티스테이지 Dockerfile + docker-compose.yml + deploy.md 작성
+- 8개 단위/통합 테스트 작성 및 전체 통과 확인
+
+**결과:** `BUILD SUCCESSFUL` — 8 tests passed
+
+---
+
+### 21. Sprint 1 마무리 (sprint-close)
+**요청:** Sprint 1 마무리 작업 수행 (ROADMAP 업데이트, PR 생성, 코드 리뷰, 검증 보고서)
+
+**수행 작업:**
+- `git push origin sprint1` — 로컬 커밋 6개 원격 푸시
+- `docs/ROADMAP.md` — Sprint 1 작업 전체 `📋` → `✅`, 진행률 0% → 12% 업데이트
+- GitHub PR 생성: https://github.com/sms1875/AI-Hackathon/pull/1 (sprint1 → master)
+- `docs/sprint/sprint1/code-review.md` 작성: Critical 0, Important 3, Suggestion 3
+- `docs/sprint/sprint1/validation-report.md` 작성: 자동 검증 결과 및 수동 검증 항목
+- `docs/sprint/sprint1.md` 검증 결과 링크 추가
+- `server/deploy.md` 자동/수동 검증 항목 구분 업데이트
+- `README.md` Phase 1 진행 중 상태 반영, 개발 환경 설정 상세화
+
+**결과:**
+- PR: https://github.com/sms1875/AI-Hackathon/pull/1
+- 검증 보고서: `docs/sprint/sprint1/validation-report.md`
+- 코드 리뷰: `docs/sprint/sprint1/code-review.md`
+
+---
+
 ## 다음 예정 작업
-- ⬜ `sprint-planner` 에이전트로 `docs/sprint/sprint1.md` 생성
-- ⬜ Sprint 1 구현 시작
+- ⬜ PR #1 머지 (수동 검증 완료 후)
+- ⬜ Sprint 2 계획 수립 (기존 크롤러 마이그레이션 + 클라이언트 연결)

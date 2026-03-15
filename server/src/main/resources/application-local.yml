@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:sqlite:${STORAGE_ROOT:/app}/gamepaper.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+storage:
+  root: ${STORAGE_ROOT:/app/storage}
+  base-url: ${BASE_URL:http://localhost:8080}
