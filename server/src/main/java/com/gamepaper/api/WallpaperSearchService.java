@@ -1,9 +1,13 @@
 package com.gamepaper.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamepaper.domain.wallpaper.Wallpaper;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -28,6 +32,10 @@ public class WallpaperSearchService {
     private final WallpaperRepository wallpaperRepository;
 
     private static final int MAX_RESULTS = 50;
+    // I-1 해소: ObjectMapper를 매 호출마다 생성하지 않고 static 상수로 재사용
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    // I-2 해소: DB 전체 로드 대신 페이지 배치(500건) 스캔으로 메모리 부하 감소
+    private static final int SCAN_PAGE_SIZE = 500;
 
     /**
      * 태그 AND 검색
@@ -38,8 +46,9 @@ public class WallpaperSearchService {
     public List<Wallpaper> searchByTagsAnd(List<String> tags) {
         if (tags == null || tags.isEmpty()) return Collections.emptyList();
 
-        List<Wallpaper> allTagged = wallpaperRepository.findAllTagged();
-        return allTagged.stream()
+        Pageable pageable = PageRequest.of(0, SCAN_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Wallpaper> page = wallpaperRepository.findAllTagged(pageable).getContent();
+        return page.stream()
                 .filter(wp -> containsAllTags(wp.getTags(), tags))
                 .limit(MAX_RESULTS)
                 .collect(Collectors.toList());
@@ -54,8 +63,9 @@ public class WallpaperSearchService {
     public List<Wallpaper> searchByTagsOr(List<String> tags) {
         if (tags == null || tags.isEmpty()) return Collections.emptyList();
 
-        List<Wallpaper> allTagged = wallpaperRepository.findAllTagged();
-        return allTagged.stream()
+        Pageable pageable = PageRequest.of(0, SCAN_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Wallpaper> page = wallpaperRepository.findAllTagged(pageable).getContent();
+        return page.stream()
                 .filter(wp -> containsAnyTag(wp.getTags(), tags))
                 .limit(MAX_RESULTS)
                 .collect(Collectors.toList());
@@ -68,8 +78,9 @@ public class WallpaperSearchService {
      * @return 태그명 → 출현 횟수 맵 (출현 횟수 내림차순 정렬)
      */
     public java.util.Map<String, Long> getTagFrequency() {
-        List<Wallpaper> allTagged = wallpaperRepository.findAllTagged();
-        return allTagged.stream()
+        Pageable pageable = PageRequest.of(0, SCAN_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Wallpaper> page = wallpaperRepository.findAllTagged(pageable).getContent();
+        return page.stream()
                 .filter(wp -> wp.getTags() != null)
                 .flatMap(wp -> parseTagsFromJson(wp.getTags()).stream())
                 .collect(Collectors.groupingBy(t -> t, Collectors.counting()))
@@ -102,9 +113,7 @@ public class WallpaperSearchService {
     public List<String> parseTagsFromJson(String tagsJson) {
         if (tagsJson == null || tagsJson.isBlank()) return Collections.emptyList();
         try {
-            // 간단한 JSON 배열 파싱 (Jackson 사용)
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            String[] arr = mapper.readValue(tagsJson, String[].class);
+            String[] arr = MAPPER.readValue(tagsJson, String[].class);
             return Arrays.asList(arr);
         } catch (Exception e) {
             log.warn("태그 JSON 파싱 실패: {}", tagsJson);

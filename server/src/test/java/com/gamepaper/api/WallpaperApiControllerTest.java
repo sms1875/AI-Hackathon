@@ -1,6 +1,7 @@
 package com.gamepaper.api;
 
 import com.gamepaper.config.DataInitializer;
+import com.gamepaper.domain.game.GameRepository;
 import com.gamepaper.domain.wallpaper.Wallpaper;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import org.junit.jupiter.api.Test;
@@ -27,14 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "spring.datasource.driver-class-name=org.sqlite.JDBC",
     "spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect",
     "spring.jpa.hibernate.ddl-auto=create-drop",
-    "spring.jpa.defer-datasource-initialization=true",
     "spring.profiles.active=local",
     "spring.sql.init.mode=never",
-    "spring.sql.init.data-locations=",
     "storage.root=${java.io.tmpdir}/gamepaper-test",
     "storage.base-url=http://localhost:8080"
 })
-class WallpaperSearchApiTest {
+class WallpaperApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,26 +42,45 @@ class WallpaperSearchApiTest {
     private WallpaperRepository wallpaperRepository;
 
     @MockBean
+    private GameRepository gameRepository;
+
+    @MockBean
+    private WallpaperSearchService searchService;
+
+    @MockBean
     private DataInitializer dataInitializer;
 
     @Test
-    void search_단일태그_검색() throws Exception {
+    void 게임ID로_배경화면_페이지_조회() throws Exception {
+        when(gameRepository.existsById(1L)).thenReturn(true);
         Wallpaper wp = new Wallpaper(1L, "test.jpg", "http://example.com/test.jpg");
-        wp.setTags("[\"dark\",\"landscape\"]");
-        // I-2 해소 후 findAllTagged(Pageable) 사용
-        when(wallpaperRepository.findAllTagged(any(Pageable.class)))
+        wp.setId(1L);
+        when(wallpaperRepository.findAllByGameId(eq(1L), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(wp)));
 
-        mockMvc.perform(get("/api/wallpapers/search")
-                        .param("tags", "dark"))
+        mockMvc.perform(get("/api/wallpapers/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].tags").value("[\"dark\",\"landscape\"]"));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test
-    void search_태그파라미터없음_400반환() throws Exception {
-        mockMvc.perform(get("/api/wallpapers/search"))
-                .andExpect(status().isBadRequest());
+    void 존재하지않는_게임ID_404에러() throws Exception {
+        when(gameRepository.existsById(99999L)).thenReturn(false);
+
+        mockMvc.perform(get("/api/wallpapers/99999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("GAME_NOT_FOUND"));
+    }
+
+    @Test
+    void 페이지_파라미터_적용() throws Exception {
+        when(gameRepository.existsById(1L)).thenReturn(true);
+        when(wallpaperRepository.findAllByGameId(eq(1L), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        mockMvc.perform(get("/api/wallpapers/1").param("page", "2").param("size", "6"))
+                .andExpect(status().isOk());
     }
 }

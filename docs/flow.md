@@ -628,3 +628,124 @@
 - PR: https://github.com/sms1875/AI-Hackathon/pull/5
 
 ---
+
+### 37. Sprint 6 계획 수립
+**요청:** Sprint 6 계획을 수립해달라 (Phase 3: 리팩토링 — 클라이언트 캐시, 에러 처리, 무한 스크롤, 테스트 보강, 코드 리뷰 이슈 해소)
+
+**수행 작업:**
+- docs/ROADMAP.md 분석 — Sprint 1~5 완료, Sprint 6 Phase 3 리팩토링 대상 파악
+- writing-plans 스킬 참조
+- 서버/클라이언트 기존 코드 파악: WallpaperApiController, WallpaperSearchService, RecommendationService, ClaudeApiClient, GameRepository, WallpaperProvider, WallpaperScreen, handle_error.dart
+- Sprint 5 코드 리뷰 이슈 (I-1 ObjectMapper, I-2 findAllTagged 전체 스캔, I-3 컨트롤러 혼재) 반영
+- docs/sprint/sprint6.md 작성 (Task 1~10, 10개 태스크)
+- 에이전트 메모리 project_state.md 업데이트
+
+**결과:**
+- docs/sprint/sprint6.md 생성 완료
+- Task 구성:
+  - Task 1: Sprint 5 코드 리뷰 이슈 해소 (I-1~I-3)
+  - Task 2: 서버 에러 응답 표준화 (GlobalExceptionHandler + ErrorCode)
+  - Task 3: WallpaperSearchService 단위 테스트 강화
+  - Task 4: RecommendationService 단위 테스트 강화
+  - Task 5: WallpaperApiController MockMvc 테스트
+  - Task 6: ClaudeApiClient 단위 테스트
+  - Task 7: 클라이언트 AppError 구조화 + 에러 코드 매핑
+  - Task 8: SharedPreferences 영속 캐시 + 오프라인 모드
+  - Task 9: 무한 스크롤 페이지네이션 (PageView → GridView + ScrollController)
+  - Task 10: GitHub Actions 전체 검증
+
+---
+
+## 2026-03-15
+
+### 38. Sprint 6 Flutter Task 7~9 구현
+**요청:** Sprint 6 Flutter Task 7~9를 순서대로 구현 (Flutter 앱 경로: D:\work\GamePaper\client)
+
+**수행 작업:**
+- Task 7: AppError 구조화 + GameRepository 에러 처리 통합 + handle_error.dart 개선
+  - `client/lib/errors/app_error.dart` 생성 — AppError 클래스, AppErrorType enum, fromServerJson/network/timeout factory
+  - `client/lib/repositories/game_repository.dart` 수정 — 모든 API 메서드에 TimeoutException/SocketException → AppError 변환 적용
+  - `client/lib/utils/handle_error.dart` 수정 — AppError 타입 분기 처리, 레거시 문자열 fallback 유지
+  - flutter analyze 확인 후 커밋
+- Task 8: LocalCache (SharedPreferences TTL 캐시) + 게임 목록 영속 캐시 + 오프라인 배너
+  - `client/lib/cache/local_cache.dart` 생성 — SharedPreferences 기반 TTL 캐시 (get/set/remove)
+  - `client/lib/repositories/game_repository.dart` 수정 — fetchGameList 캐시 우선 전략 + onRefresh 콜백 + getWallpapersForPage 1시간 TTL 캐시
+  - `client/lib/providers/home_provider.dart` 수정 — onRefresh 콜백 연결, isOffline 상태 필드, AppError.network 감지
+  - `client/lib/screens/home_screen.dart` 수정 — 오프라인 배너 위젯 추가, ListView → Column+Expanded 구조로 변경
+  - flutter analyze 확인 후 커밋
+- Task 9: WallpaperProvider 무한 스크롤 + WallpaperScreen PageView → GridView+ScrollController
+  - `client/lib/providers/wallpaper_provider.dart` 전면 재작성 — _wallpapers List, isLoading/hasMore 상태, loadInitial/loadNextPage/_loadPage 메서드
+  - `client/lib/screens/wallpaper_screen.dart` 전면 재작성 — PageController/SmoothPageIndicator 제거, ScrollController 기반 무한 스크롤 GridView, _buildGrid() 헬퍼 메서드
+  - flutter analyze 확인 후 커밋
+
+**결과:**
+- `/d/work/GamePaper` 저장소 커밋 3개 생성
+  - `feat: AppError 구조화 + GameRepository 에러 처리 통합 + handle_error 코드 기반 전환 (Task 7)`
+  - `feat: SharedPreferences 영속 캐시 + 오프라인 모드 안내 구현 (Task 8)`
+  - `feat: WallpaperProvider 무한 스크롤 + WallpaperScreen PageView → GridView 교체 (Task 9)`
+- flutter analyze 기존 파일 info 5개만 남음 (신규 파일 에러 없음)
+
+---
+
+## 2026-03-15
+
+### 39. Sprint 6 서버 Task 1~6 구현
+**요청:** Sprint 6 서버 Task 1~6을 순서대로 구현해달라 (각 Task 완료 후 git commit)
+
+**수행 작업:**
+- Task 1: Sprint 5 코드 리뷰 이슈 해소
+  - `WallpaperSearchService.java` — ObjectMapper를 static 상수로 변경 (I-1), findAllTagged(Pageable) 페이지 배치 방식으로 수정 (I-2)
+  - `WallpaperRepository.java` — findAllTagged(Pageable) 오버로드 추가 (I-2)
+  - `WallpaperLikeApiController.java` 신규 생성 — toggleLike 엔드포인트 분리 (I-3)
+  - `WallpaperRecommendApiController.java` 신규 생성 — getRecommended 엔드포인트 분리 (I-3)
+  - `WallpaperApiController.java` — toggleLike, getRecommended 제거, 관련 의존성 제거 (I-3)
+  - `WallpaperSearchApiTest.java` — findAllTagged(Pageable) mock으로 업데이트
+  - git commit: `refactor: Sprint 5 코드 리뷰 이슈 해소 - ObjectMapper static화, findAllTagged 페이징, 컨트롤러 분리 (Task 1)`
+- Task 2: 서버 에러 응답 표준화
+  - `api/error/ErrorCode.java` 신규 생성
+  - `api/error/ErrorResponse.java` 신규 생성 (record 타입)
+  - `api/error/GlobalExceptionHandler.java` 신규 생성 (@RestControllerAdvice)
+  - `ErrorResponseTest.java` 신규 생성 — 404/400 구조화 에러 응답 검증
+  - git commit: `feat: 서버 에러 응답 표준화 - GlobalExceptionHandler + ErrorCode 구현 (Task 2)`
+- Task 3: WallpaperSearchService 단위 테스트 강화
+  - `WallpaperSearchServiceTest.java` 신규 생성 — AND/OR 검색, null/빈 태그, JSON 파싱, 태그 빈도 분석 총 8개 테스트
+  - git commit: `test: WallpaperSearchService 단위 테스트 강화 - AND/OR 검색, 태그 파싱, 빈도 분석 (Task 3)`
+- Task 4: RecommendationService 단위 테스트 강화
+  - `RecommendationServiceTest.java` 교체 — 좋아요 이력 없음, 태그 기반 추천, 좋아요 항목 제외, 태그 없는 이력 총 4개 테스트
+  - git commit: `test: RecommendationService 단위 테스트 강화 - 좋아요 이력, 태그 분석, 중복 제외 (Task 4)`
+- Task 5: WallpaperApiController MockMvc 테스트
+  - `WallpaperApiControllerTest.java` 신규 생성 — 게임ID 페이지 조회, 404 에러, 페이지 파라미터 총 3개 테스트
+  - git commit: `test: WallpaperApiController MockMvc 테스트 추가 - 페이지 조회, 404 에러, 페이지 파라미터 (Task 5)`
+- Task 6: ClaudeApiClient 단위 테스트
+  - `ClaudeApiClientTest.java` 신규 생성 — API 키 미설정 예외 검증 2개 테스트
+  - `ErrorResponseTest.java` 수정 — Spring 컨텍스트 격리를 위해 @MockBean GameRepository 추가
+  - git commit: `test: ClaudeApiClient 단위 테스트 - API 키 미설정 예외 검증 + ErrorResponseTest 컨텍스트 격리 수정 (Task 6)`
+
+**결과:**
+- 전체 서버 테스트 50개 모두 PASS (BUILD SUCCESSFUL)
+- 커밋 6개 생성 (sprint6 브랜치)
+- 신규/수정 파일: WallpaperSearchService, WallpaperRepository, WallpaperApiController, WallpaperLikeApiController, WallpaperRecommendApiController, error/ 패키지 3개, 테스트 6개
+
+---
+
+### 40. Sprint 6 마무리 (sprint-close)
+**요청:** Sprint 6 마무리 작업 수행 (ROADMAP 업데이트, 빌드 검증, 코드 리뷰, 검증 보고서, PR 생성)
+
+**수행 작업:**
+- `./gradlew test --no-daemon --rerun-tasks` — BUILD SUCCESSFUL, 50개 테스트 전체 PASS
+- docs/ROADMAP.md Sprint 6 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 62% → 75% 갱신, M4 마일스톤 달성
+- docs/sprint/sprint6/code-review.md 작성 (Critical 0, Important 2, Suggestion 3)
+- docs/sprint/sprint6/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint6.md 검증 결과 링크 추가
+- docs/deploy.md Sprint 6 배포 가이드 및 자동/수동 검증 항목 추가
+- README.md Phase 3 완료 상태 반영
+- GitHub PR 생성: sprint6 → master
+
+**결과:**
+- 빌드 검증: BUILD SUCCESSFUL (50개 테스트 PASS)
+- 검증 보고서: docs/sprint/sprint6/validation-report.md
+- 코드 리뷰: docs/sprint/sprint6/code-review.md
+- M4 마일스톤(안정화 완료) 달성
+- PR: https://github.com/sms1875/AI-Hackathon/pull/6
+
+---

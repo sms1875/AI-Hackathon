@@ -21,4 +21,8 @@ public interface WallpaperRepository extends JpaRepository<Wallpaper, Long> {
     // SQLite의 JSON 함수 제한으로 인해 tags IS NOT NULL 인 전체 목록을 Java에서 필터링
     @Query("SELECT w FROM Wallpaper w WHERE w.tags IS NOT NULL ORDER BY w.createdAt DESC")
     List<Wallpaper> findAllTagged();
+
+    // I-2 해소: 페이지 배치 방식으로 전체 메모리 로드 방지
+    @Query("SELECT w FROM Wallpaper w WHERE w.tags IS NOT NULL ORDER BY w.createdAt DESC")
+    Page<Wallpaper> findAllTagged(Pageable pageable);
 }

@@ -3,8 +3,6 @@ package com.gamepaper.api;
 import com.gamepaper.api.dto.PagedResponse;
 import com.gamepaper.api.dto.WallpaperDto;
 import com.gamepaper.domain.game.GameRepository;
-import com.gamepaper.domain.like.UserLike;
-import com.gamepaper.domain.like.UserLikeRepository;
 import com.gamepaper.domain.wallpaper.Wallpaper;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +16,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * 배경화면 조회 및 검색 API 컨트롤러.
+ * I-3 해소: 좋아요(WallpaperLikeApiController), 추천(WallpaperRecommendApiController)으로 분리.
+ */
 @RestController
 @RequestMapping("/api/wallpapers")
 @RequiredArgsConstructor
@@ -29,8 +30,6 @@ public class WallpaperApiController {
     private final WallpaperRepository wallpaperRepository;
     private final GameRepository gameRepository;
     private final WallpaperSearchService searchService;
-    private final UserLikeRepository userLikeRepository;
-    private final RecommendationService recommendationService;
 
     @GetMapping("/{gameId}")
     public PagedResponse<WallpaperDto> getWallpapers(
@@ -75,58 +74,5 @@ public class WallpaperApiController {
                 : searchService.searchByTagsAnd(tagList);
 
         return results.stream().map(WallpaperDto::new).collect(Collectors.toList());
-    }
-
-    /**
-     * 좋아요 토글 API.
-     * device-id 헤더로 사용자를 식별합니다.
-     *
-     * @param id       배경화면 ID
-     * @param deviceId 기기 ID (device-id 헤더)
-     * @return {"liked": true/false, "likeCount": N}
-     */
-    @PostMapping("/{id}/like")
-    public Map<String, Object> toggleLike(
-            @PathVariable Long id,
-            @RequestHeader(value = "device-id", required = false) String deviceId) {
-
-        if (deviceId == null || deviceId.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "device-id 헤더가 필요합니다.");
-        }
-
-        if (!wallpaperRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "배경화면을 찾을 수 없습니다: " + id);
-        }
-
-        boolean alreadyLiked = userLikeRepository.existsByDeviceIdAndWallpaperId(deviceId, id);
-
-        if (alreadyLiked) {
-            userLikeRepository.deleteByDeviceIdAndWallpaperId(deviceId, id);
-            long likeCount = userLikeRepository.countByWallpaperId(id);
-            return Map.of("liked", false, "likeCount", likeCount);
-        } else {
-            userLikeRepository.save(new UserLike(deviceId, id));
-            long likeCount = userLikeRepository.countByWallpaperId(id);
-            return Map.of("liked", true, "likeCount", likeCount);
-        }
-    }
-
-    /**
-     * 추천 배경화면 API.
-     * device-id 기반으로 좋아요 이력을 분석하여 유사 배경화면을 반환합니다.
-     *
-     * @param deviceId 기기 ID (device-id 헤더)
-     * @return 추천 배경화면 목록 (좋아요 이력 없으면 빈 배열)
-     */
-    @GetMapping("/recommended")
-    public List<WallpaperDto> getRecommended(
-            @RequestHeader(value = "device-id", required = false) String deviceId) {
-
-        if (deviceId == null || deviceId.isBlank()) {
-            return List.of(); // device-id 없으면 빈 목록 반환
-        }
-
-        List<Wallpaper> recommendations = recommendationService.recommend(deviceId);
-        return recommendations.stream().map(WallpaperDto::new).collect(Collectors.toList());
     }
 }
