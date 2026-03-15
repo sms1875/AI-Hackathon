@@ -398,3 +398,38 @@
 - /admin, /admin/games, /admin/games/new 라우트 구현 완료
 
 ---
+
+### Sprint 3 Task 4~7 구현
+**요청:** Sprint 3 구현 Task 4~7을 순서대로 구현
+
+**수행 작업:**
+- Task 4: 게임 상세 UI + LocalStorageService.listFiles() 구현
+  - `LocalStorageService.listFiles()` — 디렉토리 없으면 빈 목록 반환, 정렬된 파일명 목록 반환
+  - `LocalStorageServiceTest` — listFiles 관련 테스트 3개 추가 (모두 PASS)
+  - `AdminGameController` — 상세 페이지 핸들러 추가 (CrawlingLogRepository 필드 추가)
+  - `game-detail.html` — 배경화면/파싱전략/크롤링로그 3탭 UI 생성
+  - `build.gradle` — Java 21 toolchain 설정 (foojay resolver), thymeleaf-extras-java8time 추가
+  - `settings.gradle` — foojay toolchain resolver 플러그인 추가
+- Task 5: CrawlerStrategy 엔티티 + 파싱 전략 탭
+  - `CrawlerStrategy` 엔티티 생성 (gameId, strategyJson, version, analyzedAt)
+  - `CrawlerStrategyRepository` 생성 (최신 버전 조회, 이력 전체 조회)
+  - `AdminGameController` 상세 핸들러에 전략 데이터 추가
+  - `game-detail.html` 전략 탭 완성 — 전략 없으면 AI 분석 버튼, 있으면 버전 정보 + 이력 테이블
+- Task 6: Claude API 클라이언트 구현
+  - `CrawlerStrategyParser` — JSON 코드 블록 추출, 필수 필드 검증
+  - `ClaudeApiClient` — Spring RestClient, ANTHROPIC_API_KEY 환경변수
+  - `AnalyzeRequest`/`AnalyzeResponse` DTO 작성
+  - `CrawlerStrategyParserTest` — 4개 테스트 PASS
+  - `application-local.yml` — Claude API 설정 추가
+- Task 7: AI 분석 엔드포인트 + 폼 연결
+  - `AdminAnalyzeApiController` — POST /admin/api/analyze, API 키 미설정 시 데모 전략 반환
+  - `HtmlFetcher` — Jsoup HTML 수집 컴포넌트 분리 (테스트 용이성)
+  - `AdminAnalyzeApiControllerTest` — 2개 테스트 PASS
+  - `game-new.html` AI 분석 버튼이 /admin/api/analyze 엔드포인트에 연결
+
+**결과:**
+- 커밋 4개 생성 (Task 4: df4b3c9, Task 5: 11b9567, Task 6: eeee8d6, Task 7: 0212c3b)
+- 전체 테스트 PASS (LocalStorageServiceTest 3개 + CrawlerStrategyParserTest 4개 + AdminAnalyzeApiControllerTest 2개)
+- /admin/games/{id} 3탭 상세 페이지, AI 분석 API 구현 완료
+
+---
