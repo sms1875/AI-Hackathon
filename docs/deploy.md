@@ -4,6 +4,27 @@
 
 ---
 
+## Sprint 5 배포 가이드
+
+### 추가된 환경변수
+
+```
+# Claude API 키 — 태그 자동 생성에 필요 (미설정 시 태그 생성 건너뜀)
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### 주요 변경 사항
+
+- **TaggingService**: 크롤링 파이프라인에 Claude Vision API 기반 자동 태그 생성 추가
+- **BatchTaggingService**: 기존 수집 이미지 일괄 태깅 (`POST /admin/api/games/{id}/tagging`)
+- **WallpaperSearchService**: 태그 AND/OR 검색 (`GET /api/wallpapers/search`)
+- **TagApiController**: 태그 목록 API (`GET /api/tags`)
+- **UserLike 엔티티**: 좋아요 토글 API (`POST /api/wallpapers/{id}/like`, device-id 헤더)
+- **RecommendationService**: 좋아요 이력 기반 추천 (`GET /api/wallpapers/recommended`)
+- **Flutter**: TagFilterChips, RecommendedSection, WallpaperCard 좋아요 버튼, shared_preferences 추가
+
+---
+
 ## Sprint 4 배포 가이드
 
 ### 추가된 환경변수
@@ -106,6 +127,28 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
 - ✅ AdminAnalyzeApiController 구현 (POST /admin/api/analyze, 데모 모드 지원)
 - ✅ LocalStorageService.listFiles() 구현 (Sprint 1 미구현 항목 완성)
 - ✅ Thymeleaf 관리자 UI 4페이지 구현 (/admin, /admin/games, /admin/games/new, /admin/games/{id})
+
+### Sprint 5 (신규)
+
+- ✅ Gradle compileJava + compileTestJava BUILD SUCCESSFUL (sprint-close 자동 실행)
+- ✅ flutter analyze — 에러 없음
+- ✅ TaggingService 구현 (Claude Vision API, 예외 시 빈목록 반환으로 파이프라인 보호)
+- ✅ ClaudeApiClient.generateTagsFromImage() Vision API 메서드 추가
+- ✅ BatchTaggingService 구현 (기존 이미지 일괄 태깅)
+- ✅ GenericCrawlerExecutor — TaggingService 연동 (크롤링 후 태그 자동 생성)
+- ✅ StorageService/LocalStorageService.download() 추가
+- ✅ WallpaperRepository.findAllByTagsIsNull() / findAllTagged() 추가
+- ✅ GET /api/wallpapers/search?tags=... 구현 (AND/OR 모드 지원)
+- ✅ GET /api/tags 구현 (사용 빈도순 정렬)
+- ✅ UserLike 엔티티 + UserLikeRepository 구현
+- ✅ POST /api/wallpapers/{id}/like 좋아요 토글 구현
+- ✅ RecommendationService 구현 (태그 빈도 분석 → OR 검색 → 좋아요 제외)
+- ✅ GET /api/wallpapers/recommended 추천 API 구현
+- ✅ Flutter Wallpaper 모델 tags/likeCount 필드 추가
+- ✅ Flutter ApiConfig 4개 URL 추가
+- ✅ Flutter GameRepository 4개 메서드 추가
+- ✅ Flutter TagFilterChips / RecommendedSection / WallpaperCard 좋아요 버튼 구현
+- ✅ Flutter DeviceId 유틸리티 (SharedPreferences 기반)
 
 ### Sprint 4 (신규)
 
@@ -224,6 +267,84 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
   curl -s -X POST http://localhost:8080/admin/api/games/1/crawl
   # 예상: {"message": "크롤링을 시작했습니다."}
   ```
+
+---
+
+## Sprint 5 수동 검증 항목
+
+### Docker 환경 재빌드
+
+- ⬜ `docker compose up --build` — Sprint 5 코드 반영 후 서버 정상 기동
+  ```bash
+  cd server/
+  docker compose up --build
+  # 확인: "Started GamepaperApplication" 로그 출력
+  ```
+
+### 태그 생성 실제 테스트
+
+- ⬜ `ANTHROPIC_API_KEY` 설정 확인 (`server/.env`)
+
+- ⬜ 크롤링 실행 후 배경화면 tags 필드에 태그 자동 생성 확인
+  ```bash
+  curl "http://localhost:8080/api/wallpapers/1?page=0&size=5"
+  # 예상: 각 배경화면의 tags 필드에 ["dark","landscape"] 형태 데이터
+  ```
+
+- ⬜ 기존 이미지 일괄 태깅 실행
+  ```bash
+  curl -s -X POST http://localhost:8080/admin/api/games/1/tagging
+  # 예상: {"message": "배치 태깅을 시작했습니다."} 또는 결과 카운트
+  ```
+
+### 검색 API 확인
+
+- ⬜ 태그 AND 검색 테스트
+  ```bash
+  curl "http://localhost:8080/api/wallpapers/search?tags=dark&mode=and"
+  # 예상: dark 태그를 포함한 배경화면 목록 (최대 50개)
+  ```
+
+- ⬜ 태그 OR 검색 테스트
+  ```bash
+  curl "http://localhost:8080/api/wallpapers/search?tags=dark,landscape&mode=or"
+  # 예상: dark 또는 landscape 태그가 있는 배경화면 목록
+  ```
+
+- ⬜ 태그 목록 API 확인
+  ```bash
+  curl "http://localhost:8080/api/tags"
+  # 예상: [{"tag":"dark","count":15}, ...] 빈도순 정렬
+  ```
+
+### 좋아요 및 추천 API 확인
+
+- ⬜ 좋아요 토글 테스트
+  ```bash
+  curl -s -X POST -H "device-id: test-device-001" http://localhost:8080/api/wallpapers/1/like
+  # 예상: {"liked": true, "likeCount": 1}
+  # 재호출 시: {"liked": false, "likeCount": 0}
+  ```
+
+- ⬜ 추천 API 확인 (좋아요 이력 없을 때)
+  ```bash
+  curl -s -H "device-id: new-device-999" http://localhost:8080/api/wallpapers/recommended
+  # 예상: [] (빈 배열)
+  ```
+
+- ⬜ 추천 API 확인 (좋아요 이력 있을 때)
+  ```bash
+  # 좋아요 몇 개 등록 후
+  curl -s -H "device-id: test-device-001" http://localhost:8080/api/wallpapers/recommended
+  # 예상: 좋아요한 배경화면 태그와 유사한 배경화면 목록
+  ```
+
+### Flutter 앱 UI 확인 (수동)
+
+- ⬜ 배경화면 그리드 상단에 태그 필터 칩 표시 확인
+- ⬜ 태그 칩 선택 시 필터링된 배경화면 표시 확인
+- ⬜ 홈 화면에 "추천 배경화면" 섹션 표시 (좋아요 이력 있는 경우)
+- ⬜ 배경화면 카드 하트 버튼 클릭 → 좋아요 상태 토글 확인
 
 ---
 

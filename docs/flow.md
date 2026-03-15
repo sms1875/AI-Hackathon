@@ -545,3 +545,86 @@
 - deploy.md: `docs/sprint/sprint4/deploy.md`
 
 ---
+
+## 2026-03-15
+
+### 33. Sprint 5 계획 수립
+**요청:** Sprint 5 계획을 수립해달라 (S5-1 자동 태그 생성, S5-2 태그 검색 API, S5-3 AI 추천, S5-4 Flutter UI)
+
+**수행 작업:**
+- ROADMAP.md Sprint 5 섹션 분석 (예정 상태 → 구현 범위 파악)
+- writing-plans 스킬 참조 (계획 작성 형식 준수)
+- 기존 코드 분석: ClaudeApiClient, GenericCrawlerExecutor, WallpaperRepository, Flutter GameRepository 등
+- docs/sprint/sprint5.md 작성 (Task 1~8, 전체 코드 포함)
+- 에이전트 메모리 업데이트 (project_state.md Sprint 5 현황 반영)
+
+**결과:**
+- Sprint 5 계획 문서: `docs/sprint/sprint5.md`
+- Task 1: TaggingService + ClaudeApiClient Vision API
+- Task 2: 크롤링 파이프라인 태그 연동 + BatchTaggingService + 관리자 UI
+- Task 3: WallpaperSearchService + 검색/태그 API
+- Task 4: UserLike 엔티티 + 좋아요 토글 API
+- Task 5: RecommendationService + 추천 API
+- Task 6: Flutter 모델/레포지토리 확장
+- Task 7: Flutter TagFilterChips + RecommendedSection + 좋아요 버튼
+- Task 8: 빌드 검증 + deploy.md
+
+---
+
+### 34. Sprint 5 서버 구현 (Task 1~5)
+**요청:** docs/sprint/sprint5.md를 읽어 Task 1~5를 순서대로 구현해달라
+
+**수행 작업:**
+- Task 1: ClaudeApiClient에 Vision API 메서드(generateTagsFromImage, callVisionApi, parseTagsFromResponse) 추가, TaggingService 구현, TaggingServiceTest 작성 및 통과
+- Task 2: StorageService/LocalStorageService에 download() 추가, WallpaperRepository에 findAllByTagsIsNull/findAllTagged 추가, BatchTaggingService 구현, GenericCrawlerExecutor에 TaggingService 연동, AdminTaggingApiController 구현, game-detail.html 태그 표시 및 배치 태깅 버튼 추가, BatchTaggingServiceTest 통과
+- Task 3: WallpaperSearchService 구현(AND/OR 검색, 태그 빈도 분석), WallpaperApiController에 /search 엔드포인트 추가, TagApiController 구현, WallpaperSearchApiTest 작성 및 통과
+- Task 4: UserLike 엔티티/Repository 구현, WallpaperApiController에 /{id}/like 엔드포인트 추가, LikeApiTest 작성 및 통과
+- Task 5: RecommendationService 구현(좋아요 이력 → 태그 빈도 분석 → OR 검색 → 필터링), WallpaperApiController에 /recommended 엔드포인트 추가, RecommendationServiceTest 통과
+- 기존 테스트 수정: AdminAnalyzeApiControllerTest MockBean 추가, GameApiControllerTest Mock 기반으로 전환(DataInitializer/인메모리 SQLite WAL 문제 해결)
+- 각 Task 완료 후 git commit 수행
+
+**결과:**
+- Sprint 5 서버 Task 1~5 구현 완료
+- 전체 테스트 통과 (26개 이상)
+- 커밋: Task 1~5 각각 별도 커밋
+- 새 API: GET /api/wallpapers/search, GET /api/tags, POST /api/wallpapers/{id}/like, GET /api/wallpapers/recommended
+
+---
+
+### 35. Sprint 5 Flutter 클라이언트 구현 (Task 6~8)
+**요청:** docs/sprint/sprint5.md Task 6~8을 구현해달라 (Flutter 앱: /d/work/GamePaper/client)
+
+**수행 작업:**
+- Task 6: Wallpaper 모델에 tags/likeCount 필드 추가(dart:convert로 JSON 파싱), ApiConfig에 searchUrl/tagsUrl/recommendedUrl/likeUrl 추가, GameRepository에 fetchTags/searchByTags/fetchRecommended/toggleLike 메서드 추가, Flutter 레포 커밋
+- Task 7: DeviceId 유틸리티(SharedPreferences 기반) 구현, TagFilterProvider/RecommendationProvider 구현, TagFilterChips 위젯(수평 스크롤 FilterChip 목록) 구현, RecommendedSection 위젯(홈 화면 추천 가로 스크롤 섹션) 구현, WallpaperCard를 StatefulWidget으로 교체하여 좋아요 버튼 추가, WallpaperScreen에 MultiProvider + TagFilterChips 통합, HomeScreen에 RecommendationProvider + RecommendedSection 삽입, pubspec.yaml에 shared_preferences 추가, Flutter 레포 커밋
+- Task 8: flutter analyze 실행 (에러 없음, info 경고 5개는 기존 코드), docs/sprint/sprint5/deploy.md 작성, 서버 레포 커밋
+
+**결과:**
+- Sprint 5 Flutter Task 6~8 구현 완료
+- flutter analyze 에러 없음
+- 새 파일: utils/device_id.dart, providers/tag_filter_provider.dart, providers/recommendation_provider.dart, widgets/wallpaper/tag_filter_chips.dart, widgets/home/recommended_section.dart, docs/sprint/sprint5/deploy.md
+- Flutter 레포 커밋 2개(Task 6, Task 7)
+- 서버 레포 커밋 1개(Task 8 deploy.md)
+
+---
+
+### 36. Sprint 5 마무리 (sprint-close)
+**요청:** Sprint 5 마무리 작업 수행 (ROADMAP 업데이트, 빌드 검증, 코드 리뷰, 검증 보고서, PR 생성)
+
+**수행 작업:**
+- Gradle compileJava + compileTestJava BUILD SUCCESSFUL 확인
+- docs/ROADMAP.md Sprint 5 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 50% → 62% 갱신
+- docs/sprint/sprint5/code-review.md 작성 (Critical 0, Important 3, Suggestion 4)
+- docs/sprint/sprint5/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint5.md 검증 결과 링크 추가
+- docs/deploy.md Sprint 5 배포 가이드 및 자동/수동 검증 항목 추가
+- README.md Phase 2 완료 상태 반영
+- GitHub PR 생성: sprint5 → master
+
+**결과:**
+- 빌드 검증: BUILD SUCCESSFUL (compileJava, compileTestJava)
+- 검증 보고서: docs/sprint/sprint5/validation-report.md
+- 코드 리뷰: docs/sprint/sprint5/code-review.md
+- PR: https://github.com/sms1875/AI-Hackathon/pull/5
+
+---

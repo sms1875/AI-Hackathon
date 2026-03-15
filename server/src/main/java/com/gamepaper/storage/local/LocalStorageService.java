@@ -64,6 +64,12 @@ public class LocalStorageService implements StorageService {
     }
 
     @Override
+    public byte[] download(Long gameId, String fileName) throws java.io.IOException {
+        java.nio.file.Path filePath = java.nio.file.Paths.get(storageRoot, "images", String.valueOf(gameId), fileName);
+        return java.nio.file.Files.readAllBytes(filePath);
+    }
+
+    @Override
     public List<String> listFiles(Long gameId) {
         Path dir = Paths.get(storageRoot, "images", String.valueOf(gameId));
         if (!Files.exists(dir)) {

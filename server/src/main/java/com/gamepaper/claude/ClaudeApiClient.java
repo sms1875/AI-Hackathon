@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
+
 /**
  * Anthropic Claude API 클라이언트.
  * Spring Boot 3.2의 RestClient를 사용합니다.
@@ -101,6 +103,123 @@ public class ClaudeApiClient {
 
             JSON만 출력하세요 (```json 블록으로 감싸도 됩니다).
             """.formatted(url, cleanedHtml);
+    }
+
+    /**
+     * 이미지 바이트에서 태그를 생성합니다 (Claude Vision API 사용).
+     *
+     * @param imageBytes 이미지 바이트 배열
+     * @param extension  파일 확장자 (jpg, png, webp)
+     * @return 태그 목록 (예: ["dark", "landscape", "character"])
+     * @throws IllegalStateException API 키가 설정되지 않은 경우
+     */
+    public List<String> generateTagsFromImage(byte[] imageBytes, String extension) {
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalStateException("ANTHROPIC_API_KEY 환경변수가 설정되지 않았습니다.");
+        }
+
+        // 이미지를 Base64로 인코딩
+        String base64Image = java.util.Base64.getEncoder().encodeToString(imageBytes);
+        String mediaType = resolveMediaType(extension);
+
+        String responseText = callVisionApi(base64Image, mediaType);
+        log.debug("태그 생성 응답 수신 - 길이={}", responseText.length());
+
+        return parseTagsFromResponse(responseText);
+    }
+
+    private String resolveMediaType(String extension) {
+        return switch (extension.toLowerCase()) {
+            case "png" -> "image/png";
+            case "webp" -> "image/webp";
+            case "gif" -> "image/gif";
+            default -> "image/jpeg";
+        };
+    }
+
+    private String callVisionApi(String base64Image, String mediaType) {
+        String tagPrompt = """
+                이 이미지를 분석하여 배경화면 태그를 생성해주세요.
+                태그는 영어 소문자로 작성하며, 하이픈(-)으로 단어를 연결합니다.
+                예시 태그: dark, bright, landscape, city, character, fantasy, sci-fi, blue-tone, warm-color, minimalist
+
+                JSON 배열 형식으로만 응답하세요. 예: ["dark", "landscape", "blue-tone"]
+                태그는 5~10개 사이로 생성하세요.
+                """;
+
+        ObjectNode requestBody = MAPPER.createObjectNode();
+        requestBody.put("model", model);
+        requestBody.put("max_tokens", 256);
+
+        ArrayNode messages = MAPPER.createArrayNode();
+        ObjectNode userMessage = MAPPER.createObjectNode();
+        userMessage.put("role", "user");
+
+        ArrayNode content = MAPPER.createArrayNode();
+
+        // 이미지 content block
+        ObjectNode imageContent = MAPPER.createObjectNode();
+        imageContent.put("type", "image");
+        ObjectNode imageSource = MAPPER.createObjectNode();
+        imageSource.put("type", "base64");
+        imageSource.put("media_type", mediaType);
+        imageSource.put("data", base64Image);
+        imageContent.set("source", imageSource);
+        content.add(imageContent);
+
+        // 텍스트 content block
+        ObjectNode textContent = MAPPER.createObjectNode();
+        textContent.put("type", "text");
+        textContent.put("text", tagPrompt);
+        content.add(textContent);
+
+        userMessage.set("content", content);
+        messages.add(userMessage);
+        requestBody.set("messages", messages);
+
+        String responseBody = restClient.post()
+                .uri(apiUrl)
+                .header("x-api-key", apiKey)
+                .header("anthropic-version", "2023-06-01")
+                .header("Content-Type", "application/json")
+                .body(requestBody.toString())
+                .retrieve()
+                .body(String.class);
+
+        try {
+            JsonNode root = MAPPER.readTree(responseBody);
+            return root.path("content").path(0).path("text").asText();
+        } catch (Exception e) {
+            throw new RuntimeException("Claude Vision API 응답 파싱 실패: " + e.getMessage(), e);
+        }
+    }
+
+    private List<String> parseTagsFromResponse(String responseText) {
+        // JSON 배열 추출 (```json ... ``` 감싸진 경우도 처리)
+        String cleaned = responseText
+                .replaceAll("(?s)```json\\s*", "")
+                .replaceAll("(?s)```\\s*", "")
+                .trim();
+
+        // [ ... ] 부분만 추출
+        int start = cleaned.indexOf('[');
+        int end = cleaned.lastIndexOf(']');
+        if (start < 0 || end < 0 || start >= end) {
+            log.warn("태그 JSON 파싱 실패 - 원본: {}", responseText);
+            return java.util.Collections.emptyList();
+        }
+
+        try {
+            String jsonArray = cleaned.substring(start, end + 1);
+            com.fasterxml.jackson.databind.node.ArrayNode arr =
+                    (com.fasterxml.jackson.databind.node.ArrayNode) MAPPER.readTree(jsonArray);
+            List<String> tags = new java.util.ArrayList<>();
+            arr.forEach(node -> tags.add(node.asText()));
+            return tags;
+        } catch (Exception e) {
+            log.warn("태그 JSON 파싱 실패: {}", e.getMessage());
+            return java.util.Collections.emptyList();
+        }
     }
 
     private String callApi(String prompt) {
