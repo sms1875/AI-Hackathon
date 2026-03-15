@@ -60,4 +60,29 @@ class LocalStorageServiceTest {
         String url = storageService.getUrl(2L, "image.png");
         assertThat(url).isEqualTo("http://localhost:8080/storage/images/2/image.png");
     }
+
+    @Test
+    @DisplayName("listFiles — 빈 폴더이면 빈 목록 반환")
+    void listFiles_빈폴더_빈목록_반환() {
+        java.util.List<String> files = storageService.listFiles(1L);
+        assertThat(files).isEmpty();
+    }
+
+    @Test
+    @DisplayName("listFiles — 파일 업로드 후 목록 반환")
+    void listFiles_파일_업로드_후_목록_반환() {
+        storageService.upload(1L, "wallpaper1.jpg", new byte[]{1, 2, 3});
+        storageService.upload(1L, "wallpaper2.jpg", new byte[]{4, 5, 6});
+
+        java.util.List<String> files = storageService.listFiles(1L);
+        assertThat(files).hasSize(2);
+        assertThat(files).containsExactlyInAnyOrder("wallpaper1.jpg", "wallpaper2.jpg");
+    }
+
+    @Test
+    @DisplayName("listFiles — 존재하지 않는 gameId이면 빈 목록 반환")
+    void listFiles_존재하지않는_gameId_빈목록_반환() {
+        java.util.List<String> files = storageService.listFiles(999L);
+        assertThat(files).isEmpty();
+    }
 }

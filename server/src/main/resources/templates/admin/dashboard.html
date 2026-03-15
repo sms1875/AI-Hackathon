@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+  <title>대시보드 - GamePaper Admin</title>
+</head>
+<body>
+<main>
+  <!-- 요약 카드 -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-primary" th:text="${data.totalGames}">0</h2>
+          <p class="card-text text-muted">전체 게임</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-success" th:text="${data.totalWallpapers}">0</h2>
+          <p class="card-text text-muted">총 배경화면</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-info"
+              th:text="${data.lastCrawledAt != null ? #temporals.format(data.lastCrawledAt, 'MM-dd HH:mm') : '-'}">-</h2>
+          <p class="card-text text-muted">마지막 크롤링</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-body py-3">
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            <span class="badge status-badge-active fs-6" th:text="${data.activeCount} + ' ACTIVE'">0 ACTIVE</span>
+            <span class="badge status-badge-updating fs-6" th:text="${data.updatingCount} + ' UPDATING'">0 UPDATING</span>
+            <span class="badge status-badge-failed fs-6" th:text="${data.failedCount} + ' FAILED'">0 FAILED</span>
+          </div>
+          <p class="card-text text-muted mt-2">크롤러 상태</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최근 크롤링 로그 -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-white">
+      <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>최근 크롤링 로그 (최근 10건)</h6>
+    </div>
+    <div class="card-body p-0">
+      <div th:if="${#lists.isEmpty(data.recentLogs)}" class="text-center text-muted py-4">
+        크롤링 이력이 없습니다.
+      </div>
+      <ul class="list-group list-group-flush" th:unless="${#lists.isEmpty(data.recentLogs)}">
+        <li class="list-group-item d-flex justify-content-between align-items-center"
+            th:each="log : ${data.recentLogs}">
+          <div>
+            <span class="badge me-2"
+                  th:classappend="${log.status.name() == 'SUCCESS'} ? 'bg-success' : (${log.status.name() == 'FAILED'} ? 'bg-danger' : 'bg-warning text-dark')"
+                  th:text="${log.status}">STATUS</span>
+            <span class="text-muted small">Game ID: </span>
+            <a th:href="@{/admin/games/{id}(id=${log.gameId})}"
+               class="text-decoration-none" th:text="${log.gameId}">1</a>
+            <span th:if="${log.status.name() == 'SUCCESS'}" class="ms-2 text-muted small"
+                  th:text="'수집: ' + ${log.collectedCount} + '개'"></span>
+            <span th:if="${log.errorMessage != null}" class="ms-2 text-danger small"
+                  th:text="${#strings.abbreviate(log.errorMessage, 60)}"></span>
+          </div>
+          <span class="text-muted small"
+                th:text="${log.startedAt != null ? #temporals.format(log.startedAt, 'MM-dd HH:mm:ss') : '-'}">-</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</main>
+</body>
+</html>

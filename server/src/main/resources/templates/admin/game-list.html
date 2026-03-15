@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+  <title>게임 목록 - GamePaper Admin</title>
+</head>
+<body>
+<main>
+  <!-- 플래시 메시지 -->
+  <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <!-- 액션 바 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="mb-0 text-muted" th:text="'총 ' + ${#lists.size(games)} + '개 게임'">총 0개 게임</h6>
+    <a th:href="@{/admin/games/new}" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-lg me-1"></i>게임 등록
+    </a>
+  </div>
+
+  <!-- 게임 테이블 -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <div th:if="${#lists.isEmpty(games)}" class="text-center text-muted py-5">
+        <i class="bi bi-controller fs-1 d-block mb-2"></i>
+        등록된 게임이 없습니다. 게임을 등록해주세요.
+      </div>
+      <table class="table table-hover mb-0" th:unless="${#lists.isEmpty(games)}">
+        <thead class="table-light">
+          <tr>
+            <th>게임명</th>
+            <th>URL</th>
+            <th class="text-center">배경화면</th>
+            <th class="text-center">상태</th>
+            <th>마지막 크롤링</th>
+            <th class="text-center">액션</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="game : ${games}">
+            <td>
+              <a th:href="@{/admin/games/{id}(id=${game.id})}"
+                 class="text-decoration-none fw-semibold" th:text="${game.name}">게임명</a>
+            </td>
+            <td>
+              <a th:href="${game.url}" target="_blank" class="text-muted small"
+                 th:text="${#strings.abbreviate(game.url, 50)}">URL</a>
+            </td>
+            <td class="text-center" th:text="${game.wallpaperCount}">0</td>
+            <td class="text-center">
+              <span class="badge"
+                    th:classappend="${game.status == 'ACTIVE'} ? 'bg-success' : (${game.status == 'UPDATING'} ? 'bg-primary' : 'bg-danger')"
+                    th:text="${game.status}">ACTIVE</span>
+            </td>
+            <td class="text-muted small"
+                th:text="${game.lastCrawledAt != null ? #temporals.format(game.lastCrawledAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <!-- 크롤링 실행 버튼 -->
+                <button class="btn btn-outline-primary btn-crawl"
+                        th:data-game-id="${game.id}"
+                        title="즉시 크롤링 실행">
+                  <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <!-- 상태 토글 -->
+                <form th:action="@{/admin/games/{id}/toggle-status(id=${game.id})}" method="post" style="display:inline">
+                  <button type="submit" class="btn btn-outline-secondary" title="상태 전환">
+                    <i class="bi bi-toggle-on"></i>
+                  </button>
+                </form>
+                <!-- 삭제 -->
+                <form th:action="@{/admin/games/{id}/delete(id=${game.id})}" method="post" style="display:inline"
+                      onsubmit="return confirm('게임을 삭제하시겠습니까? 배경화면 데이터는 DB에서 제거됩니다.')">
+                  <button type="submit" class="btn btn-outline-danger" title="삭제">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 크롤링 상태 토스트 -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="crawlToast" class="toast" role="alert">
+      <div class="toast-header">
+        <strong class="me-auto">크롤링</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body" id="crawlToastMsg">크롤링을 시작했습니다.</div>
+    </div>
+  </div>
+
+  <script>
+    // 크롤링 실행 버튼 클릭 핸들러
+    document.querySelectorAll('.btn-crawl').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const gameId = this.dataset.gameId;
+        fetch(`/admin/api/games/${gameId}/crawl`, { method: 'POST' })
+          .then(r => r.json())
+          .then(data => {
+            document.getElementById('crawlToastMsg').textContent = data.message;
+            new bootstrap.Toast(document.getElementById('crawlToast')).show();
+          })
+          .catch(() => {
+            document.getElementById('crawlToastMsg').textContent = '크롤링 요청 실패';
+            new bootstrap.Toast(document.getElementById('crawlToast')).show();
+          });
+      });
+    });
+  </script>
+</main>
+</body>
+</html>

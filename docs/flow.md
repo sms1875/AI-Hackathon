@@ -335,6 +335,25 @@
 
 ---
 
+### 25. Sprint 3 계획 수립
+**요청:** Sprint 3 계획 수립 (관리자 UI 프론트엔드 + AI 크롤러 기초)
+
+**수행 작업:**
+- `docs/ROADMAP.md`, `docs/sprint/sprint2.md`, 기존 서버 코드 구조 분석
+- `docs/sprint/sprint3.md` 생성 (7개 Task, 전체 구현 코드 포함):
+  - Task 1: Thymeleaf 공통 레이아웃(layout/base.html) + 대시보드 UI (DashboardData DTO, AdminDashboardController)
+  - Task 2: 게임 목록 UI + 수동 크롤링 트리거 API (`POST /admin/api/games/{id}/crawl`)
+  - Task 3: 게임 등록 UI (AI 분석 버튼 + 전략 미리보기 포함)
+  - Task 4: 게임 상세 UI + LocalStorageService.listFiles() 구현 + 테스트 3개
+  - Task 5: CrawlerStrategy 엔티티/Repository + 파싱 전략 탭
+  - Task 6: ClaudeApiClient (Spring RestClient) + CrawlerStrategyParser + 테스트 4개
+  - Task 7: AdminAnalyzeApiController (AI 분석 API, 데모 모드 지원) + 테스트 2개
+- 에이전트 메모리 업데이트 (project_state.md — Sprint 3 계획 반영)
+
+**결과:** `docs/sprint/sprint3.md` 생성 완료
+
+---
+
 ### 24. Sprint 2 마무리 (sprint-close)
 **요청:** Sprint 2 마무리 작업 수행 (ROADMAP 업데이트, PR 생성, 코드 리뷰, 검증 보고서)
 
@@ -351,5 +370,87 @@
 - PR: https://github.com/sms1875/AI-Hackathon/pull/2
 - 검증 보고서: docs/sprint/sprint2/validation-report.md
 - 코드 리뷰: docs/sprint/sprint2/code-review.md
+
+---
+
+## 2026-03-15
+
+### Sprint 3 Task 1-3 구현
+**요청:** Sprint 3 구현 시작 - docs/sprint/sprint3.md 파일을 읽어서 Task 1, 2, 3을 순서대로 구현
+
+**수행 작업:**
+- Task 1: Thymeleaf 공통 레이아웃 + 대시보드 UI
+  - `server/src/main/resources/templates/layout/base.html` — Bootstrap 5 사이드바 공통 레이아웃 fragment
+  - `server/src/main/resources/templates/admin/dashboard.html` — 요약 카드 4개 + 크롤링 로그 타임라인
+  - `server/src/main/java/com/gamepaper/admin/AdminDashboardController.java` — /admin 대시보드 컨트롤러
+  - `server/src/main/java/com/gamepaper/admin/dto/DashboardData.java` — 대시보드 데이터 DTO
+- Task 2: 게임 목록 UI + 수동 크롤링 트리거 API
+  - `server/src/main/java/com/gamepaper/admin/AdminGameController.java` — 게임 목록/등록폼/상태토글/삭제
+  - `server/src/main/java/com/gamepaper/admin/AdminCrawlApiController.java` — POST /admin/api/games/{id}/crawl
+  - `server/src/main/java/com/gamepaper/admin/dto/GameListItem.java` — 게임 목록 DTO
+  - `server/src/main/resources/templates/admin/game-list.html` — 게임 테이블 + 액션 버튼 + 토스트
+  - `server/src/main/java/com/gamepaper/crawler/CrawlerScheduler.java` — runSingle() private→public 변경
+- Task 3: 게임 등록 UI
+  - `server/src/main/resources/templates/admin/game-new.html` — 게임명/URL 입력폼 + AI 분석 버튼
+
+**결과:**
+- 커밋 3개 생성 (Task 1: 17e4968, Task 2: 3fcfa9e, Task 3: 09d92cd)
+- /admin, /admin/games, /admin/games/new 라우트 구현 완료
+
+---
+
+### Sprint 3 마무리 (sprint-close)
+**요청:** Sprint 3 마무리 작업 수행 (ROADMAP 업데이트, 검증 실행, 코드 리뷰, 검증 보고서, PR 생성)
+
+**수행 작업:**
+- Gradle clean test 실행 → 22개 테스트 전체 통과 확인
+- docs/ROADMAP.md Sprint 3 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 25% → 37% 갱신
+- docs/sprint/sprint3/code-review.md 작성 (Critical 0, Important 3, Suggestion 4)
+- docs/sprint/sprint3/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint3.md 검증 결과 링크 추가
+- docs/deploy.md Sprint 3 배포 가이드 및 자동/수동 검증 항목 추가
+- README.md Phase 2 진행 중 상태 반영
+- GitHub PR 생성: sprint3 → master
+
+**결과:**
+- 테스트: 22개 전체 PASS (AdminAnalyzeApiControllerTest 2, GameApiControllerTest 2, CrawlerStrategyParserTest 4, ImageProcessorTest 5, GameRepositoryTest 2, LocalStorageServiceTest 7)
+- 검증 보고서: docs/sprint/sprint3/validation-report.md
+- 코드 리뷰: docs/sprint/sprint3/code-review.md
+- PR: https://github.com/sms1875/AI-Hackathon/pull/3
+
+---
+
+### Sprint 3 Task 4~7 구현
+**요청:** Sprint 3 구현 Task 4~7을 순서대로 구현
+
+**수행 작업:**
+- Task 4: 게임 상세 UI + LocalStorageService.listFiles() 구현
+  - `LocalStorageService.listFiles()` — 디렉토리 없으면 빈 목록 반환, 정렬된 파일명 목록 반환
+  - `LocalStorageServiceTest` — listFiles 관련 테스트 3개 추가 (모두 PASS)
+  - `AdminGameController` — 상세 페이지 핸들러 추가 (CrawlingLogRepository 필드 추가)
+  - `game-detail.html` — 배경화면/파싱전략/크롤링로그 3탭 UI 생성
+  - `build.gradle` — Java 21 toolchain 설정 (foojay resolver), thymeleaf-extras-java8time 추가
+  - `settings.gradle` — foojay toolchain resolver 플러그인 추가
+- Task 5: CrawlerStrategy 엔티티 + 파싱 전략 탭
+  - `CrawlerStrategy` 엔티티 생성 (gameId, strategyJson, version, analyzedAt)
+  - `CrawlerStrategyRepository` 생성 (최신 버전 조회, 이력 전체 조회)
+  - `AdminGameController` 상세 핸들러에 전략 데이터 추가
+  - `game-detail.html` 전략 탭 완성 — 전략 없으면 AI 분석 버튼, 있으면 버전 정보 + 이력 테이블
+- Task 6: Claude API 클라이언트 구현
+  - `CrawlerStrategyParser` — JSON 코드 블록 추출, 필수 필드 검증
+  - `ClaudeApiClient` — Spring RestClient, ANTHROPIC_API_KEY 환경변수
+  - `AnalyzeRequest`/`AnalyzeResponse` DTO 작성
+  - `CrawlerStrategyParserTest` — 4개 테스트 PASS
+  - `application-local.yml` — Claude API 설정 추가
+- Task 7: AI 분석 엔드포인트 + 폼 연결
+  - `AdminAnalyzeApiController` — POST /admin/api/analyze, API 키 미설정 시 데모 전략 반환
+  - `HtmlFetcher` — Jsoup HTML 수집 컴포넌트 분리 (테스트 용이성)
+  - `AdminAnalyzeApiControllerTest` — 2개 테스트 PASS
+  - `game-new.html` AI 분석 버튼이 /admin/api/analyze 엔드포인트에 연결
+
+**결과:**
+- 커밋 4개 생성 (Task 4: df4b3c9, Task 5: 11b9567, Task 6: eeee8d6, Task 7: 0212c3b)
+- 전체 테스트 PASS (LocalStorageServiceTest 3개 + CrawlerStrategyParserTest 4개 + AdminAnalyzeApiControllerTest 2개)
+- /admin/games/{id} 3탭 상세 페이지, AI 분석 API 구현 완료
 
 ---

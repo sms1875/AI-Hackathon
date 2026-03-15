@@ -65,7 +65,19 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public List<String> listFiles(Long gameId) {
-        // Sprint 3 Admin UI 구현 시 추가 예정
-        throw new UnsupportedOperationException("listFiles()는 Sprint 3에서 구현 예정");
+        Path dir = Paths.get(storageRoot, "images", String.valueOf(gameId));
+        if (!Files.exists(dir)) {
+            return List.of();
+        }
+        try (var stream = Files.list(dir)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .map(p -> p.getFileName().toString())
+                    .sorted()
+                    .collect(java.util.stream.Collectors.toList());
+        } catch (IOException e) {
+            log.warn("파일 목록 조회 실패: gameId={}", gameId, e);
+            return List.of();
+        }
     }
 }
