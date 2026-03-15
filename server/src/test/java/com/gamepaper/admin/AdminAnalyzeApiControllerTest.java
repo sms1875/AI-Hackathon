@@ -2,9 +2,11 @@ package com.gamepaper.admin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.gamepaper.claude.AnalysisService;
 import com.gamepaper.claude.ClaudeApiClient;
 import com.gamepaper.claude.HtmlFetcher;
 import com.gamepaper.claude.dto.AnalyzeResponse;
+import com.gamepaper.domain.game.GameRepository;
 import com.gamepaper.domain.strategy.CrawlerStrategyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,8 @@ class AdminAnalyzeApiControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
+    @MockBean AnalysisService analysisService;
+    @MockBean GameRepository gameRepository;
     @MockBean ClaudeApiClient claudeApiClient;
     @MockBean HtmlFetcher htmlFetcher;
     @MockBean CrawlerStrategyRepository strategyRepository;

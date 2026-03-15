@@ -50,6 +50,11 @@
   <div class="tab-content">
     <!-- 배경화면 탭 -->
     <div class="tab-pane fade show active" id="wallpapersTab">
+      <div class="d-flex justify-content-end mb-2">
+        <button type="button" class="btn btn-sm btn-outline-info" id="btnBatchTag">
+          <i class="bi bi-tags me-1"></i>전체 태그 생성
+        </button>
+      </div>
       <div th:if="${#lists.isEmpty(wallpapers)}" class="text-center text-muted py-5">
         <i class="bi bi-image fs-1 d-block mb-2"></i>
         수집된 배경화면이 없습니다. 크롤링을 실행해주세요.
@@ -62,8 +67,14 @@
                  th:alt="${wp.fileName}"
                  loading="lazy">
             <div class="card-body p-1">
-              <p class="card-text text-muted" style="font-size: 0.7rem;"
+              <p class="card-text text-muted mb-1" style="font-size: 0.7rem;"
                  th:text="${wp.width != null ? wp.width + 'x' + wp.height : '-'}">해상도</p>
+              <div th:if="${wp.tags != null and !#strings.isEmpty(wp.tags)}"
+                   class="d-flex flex-wrap gap-1 mt-1">
+                <!-- tags는 JSON 문자열이므로 Thymeleaf에서 그대로 표시 -->
+                <span class="badge bg-secondary" style="font-size: 0.6rem;"
+                      th:text="${wp.tags}">태그</span>
+              </div>
             </div>
           </div>
         </div>
@@ -225,6 +236,21 @@
         alert('AI 분석 시작 실패: ' + err.message);
         btn.disabled = false;
       });
+    });
+
+    // 배치 태그 생성 버튼
+    document.getElementById('btnBatchTag')?.addEventListener('click', function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = '태그 생성 중...';
+      fetch('/admin/api/tagging/batch', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          alert(data.message);
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-tags me-1"></i>전체 태그 생성';
+        })
+        .catch(() => { btn.disabled = false; });
     });
 
     // 재분석 함수 (전략이 있는 경우)

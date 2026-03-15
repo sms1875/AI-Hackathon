@@ -22,8 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "spring.datasource.driver-class-name=org.sqlite.JDBC",
     "spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect",
     "spring.jpa.hibernate.ddl-auto=create-drop",
+    "spring.jpa.defer-datasource-initialization=true",
     "spring.profiles.active=local",
     "spring.sql.init.mode=never",
+    "spring.sql.init.data-locations=",
     "storage.root=${java.io.tmpdir}/gamepaper-test",
     "storage.base-url=http://localhost:8080"
 })

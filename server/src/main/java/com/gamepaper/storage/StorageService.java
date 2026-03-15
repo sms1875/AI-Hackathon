@@ -24,4 +24,14 @@ public interface StorageService {
      * 게임 폴더 내 파일 목록 (Sprint 3에서 구현)
      */
     List<String> listFiles(Long gameId);
+
+    /**
+     * 저장된 파일을 바이트 배열로 읽습니다.
+     *
+     * @param gameId   게임 ID
+     * @param fileName 파일명
+     * @return 파일 바이트 배열
+     * @throws java.io.IOException 파일이 없거나 읽기 실패 시
+     */
+    byte[] download(Long gameId, String fileName) throws java.io.IOException;
 }

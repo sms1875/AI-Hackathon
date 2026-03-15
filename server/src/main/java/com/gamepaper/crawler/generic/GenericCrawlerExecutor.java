@@ -1,6 +1,7 @@
 package com.gamepaper.crawler.generic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gamepaper.claude.TaggingService;
 import com.gamepaper.crawler.CrawlResult;
 import com.gamepaper.crawler.image.ImageProcessor;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * CrawlerStrategy JSON을 읽어 크롤링을 수행하는 범용 실행기.
@@ -45,6 +47,7 @@ public class GenericCrawlerExecutor {
     private final StorageService storageService;
     private final WallpaperRepository wallpaperRepository;
     private final ImageProcessor imageProcessor;
+    private final TaggingService taggingService;
 
     @Value("${selenium.hub-url:http://localhost:4444}")
     private String seleniumHubUrl;
@@ -273,6 +276,16 @@ public class GenericCrawlerExecutor {
             wallpaper.setWidth(metadata.getWidth());
             wallpaper.setHeight(metadata.getHeight());
             wallpaper.setBlurHash(metadata.getBlurHash());
+
+            // 태그 생성 (비동기 처리 없이 순차 실행 - 이미 크롤러가 별도 스레드에서 실행 중)
+            try {
+                List<String> tags = taggingService.generateTags(imageBytes, ext);
+                if (!tags.isEmpty()) {
+                    wallpaper.setTags(taggingService.toJsonString(tags));
+                }
+            } catch (Exception e) {
+                log.debug("태그 생성 건너뜀 (크롤링 계속 진행) - 오류={}", e.getMessage());
+            }
 
             wallpaperRepository.save(wallpaper);
             log.debug("이미지 저장 완료 - gameId={}, url={}", gameId, imageUrl);
