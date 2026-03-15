@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, content)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:replace="${title}">GamePaper Admin</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body { background-color: #f8f9fa; }
+    .sidebar {
+      min-height: 100vh;
+      background-color: #212529;
+      width: 220px;
+      flex-shrink: 0;
+    }
+    .sidebar .nav-link { color: #adb5bd; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #fff; background-color: #495057; border-radius: 4px; }
+    .sidebar .brand { color: #fff; font-size: 1.2rem; font-weight: bold; padding: 1rem; display: block; }
+    .main-content { flex: 1; overflow-x: auto; }
+    .status-badge-active    { background-color: #198754; }
+    .status-badge-updating  { background-color: #0d6efd; }
+    .status-badge-failed    { background-color: #dc3545; }
+    .status-badge-running   { background-color: #ffc107; color: #000; }
+  </style>
+</head>
+<body>
+<div class="d-flex">
+  <!-- 사이드바 -->
+  <nav class="sidebar d-flex flex-column p-2">
+    <a class="brand" th:href="@{/admin}">
+      <i class="bi bi-collection-play me-2"></i>GamePaper
+    </a>
+    <ul class="nav flex-column mt-3">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/admin}"
+           th:classappend="${#httpServletRequest.requestURI == '/admin' || #httpServletRequest.requestURI == '/admin/'} ? 'active' : ''">
+          <i class="bi bi-speedometer2 me-2"></i>대시보드
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/admin/games}"
+           th:classappend="${#httpServletRequest.requestURI.startsWith('/admin/games')} ? 'active' : ''">
+          <i class="bi bi-controller me-2"></i>게임 목록
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- 메인 영역 -->
+  <div class="main-content">
+    <!-- 상단 헤더 -->
+    <header class="bg-white border-bottom px-4 py-3 d-flex align-items-center">
+      <h5 class="mb-0 text-secondary" th:replace="${title}">페이지 제목</h5>
+    </header>
+    <!-- 페이지 콘텐츠 -->
+    <main class="p-4" th:replace="${content}">
+      콘텐츠
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
