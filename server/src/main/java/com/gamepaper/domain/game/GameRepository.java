@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findAllByStatus(GameStatus status);
+    boolean existsByUrl(String url);
 }
