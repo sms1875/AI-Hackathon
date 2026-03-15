@@ -545,3 +545,48 @@
 - deploy.md: `docs/sprint/sprint4/deploy.md`
 
 ---
+
+## 2026-03-15
+
+### 33. Sprint 5 계획 수립
+**요청:** Sprint 5 계획을 수립해달라 (S5-1 자동 태그 생성, S5-2 태그 검색 API, S5-3 AI 추천, S5-4 Flutter UI)
+
+**수행 작업:**
+- ROADMAP.md Sprint 5 섹션 분석 (예정 상태 → 구현 범위 파악)
+- writing-plans 스킬 참조 (계획 작성 형식 준수)
+- 기존 코드 분석: ClaudeApiClient, GenericCrawlerExecutor, WallpaperRepository, Flutter GameRepository 등
+- docs/sprint/sprint5.md 작성 (Task 1~8, 전체 코드 포함)
+- 에이전트 메모리 업데이트 (project_state.md Sprint 5 현황 반영)
+
+**결과:**
+- Sprint 5 계획 문서: `docs/sprint/sprint5.md`
+- Task 1: TaggingService + ClaudeApiClient Vision API
+- Task 2: 크롤링 파이프라인 태그 연동 + BatchTaggingService + 관리자 UI
+- Task 3: WallpaperSearchService + 검색/태그 API
+- Task 4: UserLike 엔티티 + 좋아요 토글 API
+- Task 5: RecommendationService + 추천 API
+- Task 6: Flutter 모델/레포지토리 확장
+- Task 7: Flutter TagFilterChips + RecommendedSection + 좋아요 버튼
+- Task 8: 빌드 검증 + deploy.md
+
+---
+
+### 34. Sprint 5 서버 구현 (Task 1~5)
+**요청:** docs/sprint/sprint5.md를 읽어 Task 1~5를 순서대로 구현해달라
+
+**수행 작업:**
+- Task 1: ClaudeApiClient에 Vision API 메서드(generateTagsFromImage, callVisionApi, parseTagsFromResponse) 추가, TaggingService 구현, TaggingServiceTest 작성 및 통과
+- Task 2: StorageService/LocalStorageService에 download() 추가, WallpaperRepository에 findAllByTagsIsNull/findAllTagged 추가, BatchTaggingService 구현, GenericCrawlerExecutor에 TaggingService 연동, AdminTaggingApiController 구현, game-detail.html 태그 표시 및 배치 태깅 버튼 추가, BatchTaggingServiceTest 통과
+- Task 3: WallpaperSearchService 구현(AND/OR 검색, 태그 빈도 분석), WallpaperApiController에 /search 엔드포인트 추가, TagApiController 구현, WallpaperSearchApiTest 작성 및 통과
+- Task 4: UserLike 엔티티/Repository 구현, WallpaperApiController에 /{id}/like 엔드포인트 추가, LikeApiTest 작성 및 통과
+- Task 5: RecommendationService 구현(좋아요 이력 → 태그 빈도 분석 → OR 검색 → 필터링), WallpaperApiController에 /recommended 엔드포인트 추가, RecommendationServiceTest 통과
+- 기존 테스트 수정: AdminAnalyzeApiControllerTest MockBean 추가, GameApiControllerTest Mock 기반으로 전환(DataInitializer/인메모리 SQLite WAL 문제 해결)
+- 각 Task 완료 후 git commit 수행
+
+**결과:**
+- Sprint 5 서버 Task 1~5 구현 완료
+- 전체 테스트 통과 (26개 이상)
+- 커밋: Task 1~5 각각 별도 커밋
+- 새 API: GET /api/wallpapers/search, GET /api/tags, POST /api/wallpapers/{id}/like, GET /api/wallpapers/recommended
+
+---
