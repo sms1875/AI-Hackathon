@@ -1,6 +1,7 @@
 package com.gamepaper.api;
 
 import com.gamepaper.config.DataInitializer;
+import com.gamepaper.domain.game.GameRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,8 +34,12 @@ class ErrorResponseTest {
     @MockBean
     private DataInitializer dataInitializer;
 
+    @MockBean
+    private GameRepository gameRepository;
+
     @Test
     void 존재하지않는_게임_404_구조화에러() throws Exception {
+        when(gameRepository.existsById(99999L)).thenReturn(false);
         mockMvc.perform(get("/api/wallpapers/99999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("GAME_NOT_FOUND"))
