@@ -34,6 +34,7 @@
             <th>URL</th>
             <th class="text-center">배경화면</th>
             <th class="text-center">상태</th>
+            <th class="text-center">AI 분석</th>
             <th>마지막 크롤링</th>
             <th class="text-center">액션</th>
           </tr>
@@ -53,6 +54,14 @@
               <span class="badge"
                     th:classappend="${game.status == 'ACTIVE'} ? 'bg-success' : (${game.status == 'UPDATING'} ? 'bg-primary' : 'bg-danger')"
                     th:text="${game.status}">ACTIVE</span>
+            </td>
+            <td class="text-center">
+              <span th:switch="${game.analysisStatus?.name()}">
+                <span th:case="'COMPLETED'" class="badge bg-success">분석완료</span>
+                <span th:case="'ANALYZING'" class="badge bg-warning text-dark">분석중</span>
+                <span th:case="'FAILED'" class="badge bg-danger">분석실패</span>
+                <span th:case="*" class="badge bg-secondary">미분석</span>
+              </span>
             </td>
             <td class="text-muted small"
                 th:text="${game.lastCrawledAt != null ? #temporals.format(game.lastCrawledAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>

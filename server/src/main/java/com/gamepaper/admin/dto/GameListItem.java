@@ -1,5 +1,6 @@
 package com.gamepaper.admin.dto;
 
+import com.gamepaper.domain.game.AnalysisStatus;
 import com.gamepaper.domain.game.Game;
 import lombok.Getter;
 
@@ -10,7 +11,8 @@ public class GameListItem {
     private final Long id;
     private final String name;
     private final String url;
-    private final String status;       // ACTIVE / UPDATING / FAILED
+    private final String status;           // ACTIVE / UPDATING / FAILED / INACTIVE
+    private final AnalysisStatus analysisStatus;  // AI 분석 상태
     private final long wallpaperCount;
     private final LocalDateTime lastCrawledAt;
 
@@ -19,6 +21,7 @@ public class GameListItem {
         this.name = game.getName();
         this.url = game.getUrl();
         this.status = game.getStatus().name();
+        this.analysisStatus = game.getAnalysisStatus();
         this.wallpaperCount = wallpaperCount;
         this.lastCrawledAt = game.getLastCrawledAt();
     }

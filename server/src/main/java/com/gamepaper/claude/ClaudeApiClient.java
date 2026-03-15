@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gamepaper.claude.dto.AnalyzeResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,13 +13,13 @@ import org.springframework.web.client.RestClient;
 /**
  * Anthropic Claude API 클라이언트.
  * Spring Boot 3.2의 RestClient를 사용합니다.
+ * RestClient.Builder 빈 재사용으로 커넥션 풀 공유 (I-2 해소).
  *
  * 사용 전제: ANTHROPIC_API_KEY 환경변수 설정 필요.
  * API 키 미설정 시 IllegalStateException이 발생하며, 호출자가 데모 전략으로 대체합니다.
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class ClaudeApiClient {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -38,6 +37,12 @@ public class ClaudeApiClient {
     private int maxTokens;
 
     private final CrawlerStrategyParser parser;
+    private final RestClient restClient;  // 빈 재사용 (I-2 해소)
+
+    public ClaudeApiClient(CrawlerStrategyParser parser, RestClient.Builder restClientBuilder) {
+        this.parser = parser;
+        this.restClient = restClientBuilder.build();
+    }
 
     /**
      * 주어진 HTML 소스를 분석하여 파싱 전략 JSON을 생성합니다.
@@ -90,7 +95,8 @@ public class ClaudeApiClient {
               "waitMs": 페이지 로딩 대기 시간 ms (숫자),
               "preActions": [
                 {"action": "click", "selector": "닫기 버튼 셀렉터"}
-              ]
+              ],
+              "stopCondition": "duplicate_count:10 (중복 이미지 N개 연속 시 중단, 선택)"
             }
 
             JSON만 출력하세요 (```json 블록으로 감싸도 됩니다).
@@ -117,8 +123,7 @@ public class ClaudeApiClient {
         messages.add(userMessage);
         requestBody.set("messages", messages);
 
-        String responseBody = RestClient.create()
-                .post()
+        String responseBody = restClient.post()
                 .uri(apiUrl)
                 .header("x-api-key", apiKey)
                 .header("anthropic-version", "2023-06-01")

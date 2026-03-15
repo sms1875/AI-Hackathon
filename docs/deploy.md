@@ -4,6 +4,25 @@
 
 ---
 
+## Sprint 4 배포 가이드
+
+### 추가된 환경변수
+
+```
+# Claude API 키 (없으면 데모 전략으로 동작)
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+`server/.env` 파일에 위 항목을 추가하세요. `ANTHROPIC_API_KEY` 미설정 시 AI 분석은 데모 전략을 반환합니다.
+
+### 주요 변경 사항
+
+- **DataInitializer**: 앱 시작 시 6개 게임 초기 데이터 자동 등록 (원신, 마비노기, 메이플스토리 모바일, NIKKE, 파이널판타지 XIV, 검은사막)
+- **GenericCrawlerExecutor**: 기존 6개 게임별 크롤러 클래스 제거, 전략 JSON 기반 범용 크롤러로 대체
+- **AI 분석 API**: `POST /admin/games/{id}/analyze` (비동기), `GET /admin/games/{id}/analyze/status` (polling)
+
+---
+
 ## Sprint 3 배포 가이드
 
 ### 추가된 환경변수
@@ -87,6 +106,20 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
 - ✅ AdminAnalyzeApiController 구현 (POST /admin/api/analyze, 데모 모드 지원)
 - ✅ LocalStorageService.listFiles() 구현 (Sprint 1 미구현 항목 완성)
 - ✅ Thymeleaf 관리자 UI 4페이지 구현 (/admin, /admin/games, /admin/games/new, /admin/games/{id})
+
+### Sprint 4 (신규)
+
+- ✅ Gradle compileJava + compileTestJava BUILD SUCCESSFUL
+- ✅ Sprint 3 코드 리뷰 이슈 3건 해소 (@Async 스레드풀, RestClient.Builder 재사용, GameStatus.INACTIVE)
+- ✅ AnalysisStatus 열거형 생성 (PENDING, ANALYZING, COMPLETED, FAILED)
+- ✅ AnalysisService 비동기 AI 분석 파이프라인 구현 (@Async("asyncExecutor"))
+- ✅ POST /admin/games/{id}/analyze 트리거 API 구현 (202 Accepted)
+- ✅ GET /admin/games/{id}/analyze/status 상태 polling API 구현
+- ✅ GenericCrawlerExecutor 구현 (4가지 페이지네이션: none, button_click, scroll, url_pattern)
+- ✅ DataInitializer — 앱 시작 시 6개 게임 초기 데이터 자동 등록 (멱등성 보장)
+- ✅ CrawlerScheduler — 전략 있는 게임 GenericCrawlerExecutor 우선 실행, INACTIVE 제외
+- ✅ 기존 크롤러 6개 제거 (GenshinCrawler, MabinogiCrawler, MapleStoryCrawler, NikkeCrawler, FinalFantasyXIVCrawler, BlackDesertCrawler)
+- ✅ 프론트엔드 AI 분석 polling UI (game-new.html, game-detail.html, game-list.html)
 
 ---
 
@@ -191,6 +224,60 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
   curl -s -X POST http://localhost:8080/admin/api/games/1/crawl
   # 예상: {"message": "크롤링을 시작했습니다."}
   ```
+
+---
+
+## Sprint 4 수동 검증 항목
+
+### Docker 환경 재빌드
+
+- ⬜ `docker compose up --build` — Sprint 4 코드 반영 후 컨테이너 정상 기동 확인
+  ```bash
+  cd server/
+  docker compose up --build
+  # 확인: "Started GamepaperApplication" 로그 출력
+  ```
+
+- ⬜ DataInitializer 동작 확인 — 기동 로그에서 6개 게임 등록 메시지 확인
+  ```bash
+  docker compose logs backend | grep "초기 데이터"
+  ```
+
+### 관리자 UI 브라우저 검증
+
+- ⬜ `http://localhost:8080/admin/games` — 게임 목록 6개 표시 + AI 분석 상태 뱃지 확인
+
+- ⬜ `http://localhost:8080/admin/games/new` — "AI 분석 시작" 버튼 클릭 → polling 진행 상태 확인
+
+- ⬜ `http://localhost:8080/admin/games/{id}` — "재분석" 버튼 클릭 → 새 버전 전략 생성 확인
+
+- ⬜ 크롤링 트리거 → 로그 탭에서 수집 결과 확인
+
+### AI 분석 API 검증
+
+- ⬜ `POST /admin/games/{id}/analyze` — 202 Accepted 반환 확인
+  ```bash
+  curl -s -X POST http://localhost:8080/admin/games/1/analyze | python -m json.tool
+  # 예상: {"status": "ANALYZING", "message": "AI 분석을 시작했습니다..."}
+  ```
+
+- ⬜ `GET /admin/games/{id}/analyze/status` — 상태 JSON 반환 확인
+  ```bash
+  curl -s http://localhost:8080/admin/games/1/analyze/status | python -m json.tool
+  ```
+
+- ⬜ `POST /admin/api/games/{id}/crawl` — GenericCrawlerExecutor 실행 확인
+  ```bash
+  curl -s -X POST http://localhost:8080/admin/api/games/1/crawl
+  ```
+
+### AI 분석 실제 테스트
+
+- ⬜ `ANTHROPIC_API_KEY` 환경변수 설정 확인 (`server/.env`)
+
+- ⬜ 실제 게임 URL 등록 → AI 분석 60초 이내 완료 확인
+
+- ⬜ 생성된 전략 JSON 유효성 확인 (imageSelector, paginationType 포함)
 
 ---
 

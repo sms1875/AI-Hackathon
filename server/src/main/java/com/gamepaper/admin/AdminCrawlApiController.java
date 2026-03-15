@@ -1,15 +1,17 @@
 package com.gamepaper.admin;
 
 import com.gamepaper.crawler.CrawlerScheduler;
-import com.gamepaper.crawler.GameCrawler;
+import com.gamepaper.domain.game.Game;
 import com.gamepaper.domain.game.GameRepository;
+import com.gamepaper.domain.strategy.CrawlerStrategy;
+import com.gamepaper.domain.strategy.CrawlerStrategyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -17,35 +19,35 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminCrawlApiController {
 
-    private final List<GameCrawler> crawlers;
     private final CrawlerScheduler crawlerScheduler;
     private final GameRepository gameRepository;
+    private final CrawlerStrategyRepository strategyRepository;
 
     /**
      * 특정 게임 즉시 크롤링 트리거.
-     * 게임 ID와 일치하는 크롤러를 찾아 동기 실행.
-     * (Sprint 4에서 비동기 처리로 전환)
+     * CrawlerStrategy가 있으면 GenericCrawlerExecutor를 사용합니다.
+     * 전략이 없으면 AI 분석 먼저 수행하도록 안내합니다.
      */
     @PostMapping("/games/{id}/crawl")
     public ResponseEntity<Map<String, String>> triggerCrawl(@PathVariable Long id) {
-        if (!gameRepository.existsById(id)) {
+        Optional<Game> gameOpt = gameRepository.findById(id);
+        if (gameOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        GameCrawler target = crawlers.stream()
-                .filter(c -> c.getGameId().equals(id))
-                .findFirst()
-                .orElse(null);
+        Game game = gameOpt.get();
+        Optional<CrawlerStrategy> strategyOpt =
+                strategyRepository.findTopByGameIdOrderByVersionDesc(id);
 
-        if (target == null) {
+        if (strategyOpt.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of(
-                    "message", "해당 게임의 크롤러를 찾을 수 없습니다. (Sprint 4에서 GenericCrawlerExecutor 구현 예정)"
+                    "message", "AI 분석 후 전략을 먼저 생성하세요."
             ));
         }
 
-        // 별도 스레드로 크롤러 실행 (블로킹 방지)
-        new Thread(() -> crawlerScheduler.runSingle(target)).start();
-        log.info("수동 크롤링 트리거 - gameId={}", id);
+        CrawlerStrategy strategy = strategyOpt.get();
+        crawlerScheduler.runGenericAsync(id, game.getUrl(), strategy.getStrategyJson());
+        log.info("GenericCrawlerExecutor 크롤링 트리거 - gameId={}", id);
         return ResponseEntity.ok(Map.of("message", "크롤링을 시작했습니다."));
     }
 }

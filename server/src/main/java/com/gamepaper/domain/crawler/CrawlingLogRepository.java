@@ -6,4 +6,5 @@ import java.util.List;
 public interface CrawlingLogRepository extends JpaRepository<CrawlingLog, Long> {
     List<CrawlingLog> findTop10ByOrderByStartedAtDesc();
     List<CrawlingLog> findAllByGameIdOrderByStartedAtDesc(Long gameId);
+    List<CrawlingLog> findTop3ByGameIdOrderByStartedAtDesc(Long gameId);
 }

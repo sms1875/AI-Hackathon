@@ -9,12 +9,14 @@ import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -44,19 +46,29 @@ public class AdminGameController {
         return "admin/game-new";
     }
 
-    // 게임 등록 처리 (AI 분석 없이 직접 저장)
+    // 게임 등록 처리 (analyzeOnly 파라미터 지원)
     @PostMapping("/new")
-    public String createGame(@RequestParam String name,
-                             @RequestParam String url,
-                             RedirectAttributes ra) {
+    public ResponseEntity<?> createGame(
+            @RequestParam String name,
+            @RequestParam String url,
+            @RequestParam(required = false, defaultValue = "false") boolean analyzeOnly) {
+
         if (name.isBlank() || url.isBlank()) {
-            ra.addFlashAttribute("error", "게임명과 URL을 모두 입력해주세요.");
-            return "redirect:/admin/games/new";
+            return ResponseEntity.badRequest().body(Map.of("error", "게임명과 URL을 모두 입력해주세요."));
         }
+
         Game game = new Game(name, url);
         gameRepository.save(game);
-        ra.addFlashAttribute("message", "게임 '" + name + "'이(가) 등록되었습니다.");
-        return "redirect:/admin/games/" + game.getId();
+
+        if (analyzeOnly) {
+            // AJAX 요청: JSON으로 gameId 반환
+            return ResponseEntity.ok(Map.of("gameId", game.getId(), "name", game.getName()));
+        }
+
+        // 일반 폼 제출: 리다이렉트
+        return ResponseEntity.status(302)
+                .location(java.net.URI.create("/admin/games/" + game.getId()))
+                .build();
     }
 
     // 게임 상태 토글 (활성화/비활성화)
@@ -64,7 +76,7 @@ public class AdminGameController {
     public String toggleStatus(@PathVariable Long id, RedirectAttributes ra) {
         gameRepository.findById(id).ifPresent(game -> {
             if (game.getStatus() == com.gamepaper.domain.game.GameStatus.ACTIVE) {
-                game.setStatus(com.gamepaper.domain.game.GameStatus.FAILED); // 비활성화는 FAILED로 표시
+                game.setStatus(com.gamepaper.domain.game.GameStatus.INACTIVE);  // FAILED 대신 INACTIVE 사용 (I-3 해소)
             } else {
                 game.setStatus(com.gamepaper.domain.game.GameStatus.ACTIVE);
             }
