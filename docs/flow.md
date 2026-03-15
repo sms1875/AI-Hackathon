@@ -295,6 +295,61 @@
 
 ---
 
-## 다음 예정 작업
-- ⬜ PR #1 머지 (수동 검증 완료 후)
-- ⬜ Sprint 2 계획 수립 (기존 크롤러 마이그레이션 + 클라이언트 연결)
+### 22. Sprint 2 계획 수립
+**요청:** Sprint 2 계획 수립 (기존 6개 게임 크롤러 마이그레이션 + BlurHash + 클라이언트 API 연결 + CI)
+
+**수행 작업:**
+- `docs/ROADMAP.md` 및 `docs/sprint/sprint1.md` 분석 — Sprint 1 코드 리뷰 이슈(I-1, I-2, I-3) 확인
+- `docs/TECH-SPEC.md`, `server/` 디렉토리 구조 확인
+- `docs/sprint/sprint2.md` 생성:
+  - Task 0: CrawlingLog.status 타입 수정 (Sprint 1 I-3 해소)
+  - Task 1: GameCrawler 인터페이스 + CrawlerScheduler + CrawlResult 구현
+  - Task 2: ImageProcessor (BlurHash + 해상도 추출)
+  - Task 3: AbstractGameCrawler + Jsoup 크롤러 2개 (FFXIV, 검은사막)
+  - Task 4: Selenium 크롤러 4개 (원신, 마비노기, 메이플스토리, NIKKE)
+  - Task 5: docker-compose Selenium 서비스 추가 + 게임 초기 데이터
+  - Task 6: Flutter 앱 API 연결 전환 (Firebase → 서버 REST API)
+  - Task 7: GitHub Actions CI 파이프라인
+
+**결과:** `docs/sprint/sprint2.md` 생성 완료
+
+---
+
+### 23. Sprint 2 구현 완료
+**요청:** Sprint 2 구현 (Task 0~7 전체)
+
+**수행 작업:**
+- Task 0: CrawlingLog.status String → CrawlingLogStatus enum 수정 (Sprint 1 I-3 이슈 해소)
+- Task 1: GameCrawler 인터페이스 + CrawlerScheduler + CrawlResult 구현
+- Task 2: ImageProcessor (BlurHash 생성 + 해상도 추출)
+- Task 3: AbstractGameCrawler + Jsoup 크롤러 2개 (FFXIV, 검은사막)
+- Task 4: Selenium 크롤러 4개 (원신, 마비노기, 메이플스토리, NIKKE)
+- Task 5: Docker Compose Selenium standalone-chrome 서비스 + 게임 초기 데이터 (6개)
+- Task 6: Flutter 앱 Firebase Storage → 서버 REST API 전환 (별도 레포: /d/work/GamePaper, 커밋: 25aaf87)
+- Task 7: GitHub Actions CI 파이프라인 (.github/workflows/ci.yml)
+
+**결과:**
+- Sprint 2 모든 태스크 완료
+- Phase 1 마일스톤(M1) 달성: Docker 환경에서 6개 게임 크롤러 동작, Flutter 앱 API 연결
+- 최종 커밋: 941680a feat: GitHub Actions CI 파이프라인 및 Sprint 2 계획 문서 추가 (Task 7)
+
+---
+
+### 24. Sprint 2 마무리 (sprint-close)
+**요청:** Sprint 2 마무리 작업 수행 (ROADMAP 업데이트, PR 생성, 코드 리뷰, 검증 보고서)
+
+**수행 작업:**
+- docs/ROADMAP.md Sprint 2 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 12% → 25% 갱신
+- docs/deploy.md 생성 (Sprint 2 배포/검증 가이드)
+- docs/sprint/sprint2/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint2/code-review.md 작성 (코드 리뷰 결과)
+- docs/sprint/sprint2.md 검증 결과 링크 추가
+- GitHub PR 생성: sprint2 → master
+- README.md Phase 1 완료 상태 반영
+
+**결과:**
+- PR: (생성 후 URL 기재)
+- 검증 보고서: docs/sprint/sprint2/validation-report.md
+- 코드 리뷰: docs/sprint/sprint2/code-review.md
+
+---

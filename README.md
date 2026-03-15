@@ -27,8 +27,8 @@
 
 | Phase | 내용 | 상태 |
 |-------|------|------|
-| Phase 1 | 인프라 기초 (DB/스토리지 추상화, Docker) | 🔄 진행 중 (Sprint 1 완료) |
-| Phase 2 | AI 범용 크롤러 + 관리자 페이지 | 📋 예정 |
+| Phase 1 | 인프라 기초 (DB/스토리지 추상화, Docker) | ✅ 완료 (Sprint 1-2 완료) |
+| Phase 2 | AI 범용 크롤러 + 관리자 페이지 | 🔄 진행 예정 (Sprint 3 예정) |
 | Phase 3 | 리팩토링 (캐시, 에러 처리, 테스트) | 📋 예정 |
 | Phase 4 | 멀티플랫폼 확장 (데스크탑, 해상도별 추천) | 📋 예정 |
 
@@ -44,6 +44,7 @@
 | [DATA-FLOW](docs/DATA-FLOW.md) | 데이터 흐름 (크롤링 파이프라인, AI 분석, 이미지 서빙 등) |
 | [REVIEW](docs/REVIEW.md) | PRD·ROADMAP 정합성 검토, 리스크, 미결 사항 |
 | [BRANCH-STRATEGY](docs/BRANCH-STRATEGY.md) | 브랜치 전략 (master / sprint{n} / hotfix) |
+| [deploy.md](docs/deploy.md) | 배포 및 검증 가이드 (자동/수동 항목 구분) |
 | [flow.md](docs/flow.md) | 작업 이력 |
 
 ## 개발 환경 설정
@@ -63,7 +64,7 @@ docker compose up --build
 ```
 
 서버 기동 후 `http://localhost:8080/api/games` 로 동작 확인.
-상세 가이드: [server/deploy.md](server/deploy.md)
+상세 가이드: [server/deploy.md](server/deploy.md) | 전체 배포/검증: [docs/deploy.md](docs/deploy.md)
 
 ### 앱 실행 (Flutter)
 

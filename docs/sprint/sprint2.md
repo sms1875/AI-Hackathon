@@ -2077,3 +2077,10 @@ GamePaper Flutter 레포 (별도):
 6. Flutter 앱 실행 → 게임 목록 → 배경화면 그리드 표시 → 배경화면 적용 수동 확인
 7. GitHub Actions 확인 → CI 워크플로우 초록불
 ```
+
+---
+
+## 검증 결과
+
+- [검증 보고서](sprint2/validation-report.md)
+- [코드 리뷰](sprint2/code-review.md)
