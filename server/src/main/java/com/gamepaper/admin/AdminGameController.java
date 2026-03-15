@@ -64,7 +64,7 @@ public class AdminGameController {
     public String toggleStatus(@PathVariable Long id, RedirectAttributes ra) {
         gameRepository.findById(id).ifPresent(game -> {
             if (game.getStatus() == com.gamepaper.domain.game.GameStatus.ACTIVE) {
-                game.setStatus(com.gamepaper.domain.game.GameStatus.FAILED); // 비활성화는 FAILED로 표시
+                game.setStatus(com.gamepaper.domain.game.GameStatus.INACTIVE);  // FAILED 대신 INACTIVE 사용 (I-3 해소)
             } else {
                 game.setStatus(com.gamepaper.domain.game.GameStatus.ACTIVE);
             }

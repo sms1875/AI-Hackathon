@@ -43,8 +43,8 @@ public class AdminCrawlApiController {
             ));
         }
 
-        // 별도 스레드로 크롤러 실행 (블로킹 방지)
-        new Thread(() -> crawlerScheduler.runSingle(target)).start();
+        // @Async로 크롤러 실행 (I-1 해소: new Thread() 대체)
+        crawlerScheduler.runSingleAsync(target);
         log.info("수동 크롤링 트리거 - gameId={}", id);
         return ResponseEntity.ok(Map.of("message", "크롤링을 시작했습니다."));
     }

@@ -7,6 +7,7 @@ import com.gamepaper.domain.game.GameRepository;
 import com.gamepaper.domain.game.GameStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,14 @@ public class CrawlerScheduler {
             runSingle(crawler);
         }
         log.info("크롤링 스케줄 완료");
+    }
+
+    /**
+     * 비동기 단일 크롤러 실행 (I-1 해소: new Thread() 대체)
+     */
+    @Async("asyncExecutor")
+    public void runSingleAsync(GameCrawler crawler) {
+        runSingle(crawler);
     }
 
     public void runSingle(GameCrawler crawler) {
