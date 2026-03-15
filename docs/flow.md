@@ -746,5 +746,6 @@
 - 검증 보고서: docs/sprint/sprint6/validation-report.md
 - 코드 리뷰: docs/sprint/sprint6/code-review.md
 - M4 마일스톤(안정화 완료) 달성
+- PR: https://github.com/sms1875/AI-Hackathon/pull/6
 
 ---
