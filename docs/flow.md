@@ -504,3 +504,23 @@
   - Task 10: 기존 크롤러 클래스 제거 (검증 완료 후)
 
 ---
+
+## 2026-03-15
+
+### 31. Sprint 4 Task 6~10 구현
+**요청:** Sprint 4 Task 6~10을 순서대로 구현
+
+**수행 작업:**
+- Task 6: AdminCrawlApiController에 GenericCrawlerExecutor 연결 (CrawlerStrategy 있으면 GenericCrawlerExecutor, 없으면 기존 크롤러 fallback), CrawlerScheduler에 runGenericAsync/runGeneric/handleCrawlFailure 추가, CrawlingLogRepository에 findTop3ByGameIdOrderByStartedAtDesc 추가
+- Task 7: DataInitializer(CommandLineRunner) 생성 — 앱 시작 시 6개 게임 초기 데이터 자동 등록 (멱등성 보장), GameRepository에 existsByUrl 쿼리 추가
+- Task 8: CrawlerScheduler.runAll() — 이미 Task 6에서 GenericCrawlerExecutor 우선 + CrawlerStrategyRepository 의존성 포함하여 구현 완료
+- Task 9: 전체 빌드 검증 (compileJava + compileTestJava BUILD SUCCESSFUL), docs/sprint/sprint4/deploy.md 생성
+- Task 10: 기존 크롤러 6개 파일 삭제 (GenshinCrawler, MabinogiCrawler, MapleStoryCrawler, NikkeCrawler, FinalFantasyXIVCrawler, BlackDesertCrawler), AdminCrawlApiController에서 GameCrawler 목록 의존성 및 fallback 제거, CrawlerScheduler에서 GameCrawler 목록 의존성 및 fallback 제거
+
+**결과:**
+- 4개 커밋 생성 (Task 6, 7, 9, 10)
+- GenericCrawlerExecutor 기반 크롤링 파이프라인 완성
+- 기존 크롤러 6개 제거 완료
+- deploy.md: `docs/sprint/sprint4/deploy.md`
+
+---
