@@ -686,3 +686,44 @@
 - flutter analyze 기존 파일 info 5개만 남음 (신규 파일 에러 없음)
 
 ---
+
+## 2026-03-15
+
+### N. Sprint 6 서버 Task 1~6 구현
+**요청:** Sprint 6 서버 Task 1~6을 순서대로 구현해달라 (각 Task 완료 후 git commit)
+
+**수행 작업:**
+- Task 1: Sprint 5 코드 리뷰 이슈 해소
+  - `WallpaperSearchService.java` — ObjectMapper를 static 상수로 변경 (I-1), findAllTagged(Pageable) 페이지 배치 방식으로 수정 (I-2)
+  - `WallpaperRepository.java` — findAllTagged(Pageable) 오버로드 추가 (I-2)
+  - `WallpaperLikeApiController.java` 신규 생성 — toggleLike 엔드포인트 분리 (I-3)
+  - `WallpaperRecommendApiController.java` 신규 생성 — getRecommended 엔드포인트 분리 (I-3)
+  - `WallpaperApiController.java` — toggleLike, getRecommended 제거, 관련 의존성 제거 (I-3)
+  - `WallpaperSearchApiTest.java` — findAllTagged(Pageable) mock으로 업데이트
+  - git commit: `refactor: Sprint 5 코드 리뷰 이슈 해소 - ObjectMapper static화, findAllTagged 페이징, 컨트롤러 분리 (Task 1)`
+- Task 2: 서버 에러 응답 표준화
+  - `api/error/ErrorCode.java` 신규 생성
+  - `api/error/ErrorResponse.java` 신규 생성 (record 타입)
+  - `api/error/GlobalExceptionHandler.java` 신규 생성 (@RestControllerAdvice)
+  - `ErrorResponseTest.java` 신규 생성 — 404/400 구조화 에러 응답 검증
+  - git commit: `feat: 서버 에러 응답 표준화 - GlobalExceptionHandler + ErrorCode 구현 (Task 2)`
+- Task 3: WallpaperSearchService 단위 테스트 강화
+  - `WallpaperSearchServiceTest.java` 신규 생성 — AND/OR 검색, null/빈 태그, JSON 파싱, 태그 빈도 분석 총 8개 테스트
+  - git commit: `test: WallpaperSearchService 단위 테스트 강화 - AND/OR 검색, 태그 파싱, 빈도 분석 (Task 3)`
+- Task 4: RecommendationService 단위 테스트 강화
+  - `RecommendationServiceTest.java` 교체 — 좋아요 이력 없음, 태그 기반 추천, 좋아요 항목 제외, 태그 없는 이력 총 4개 테스트
+  - git commit: `test: RecommendationService 단위 테스트 강화 - 좋아요 이력, 태그 분석, 중복 제외 (Task 4)`
+- Task 5: WallpaperApiController MockMvc 테스트
+  - `WallpaperApiControllerTest.java` 신규 생성 — 게임ID 페이지 조회, 404 에러, 페이지 파라미터 총 3개 테스트
+  - git commit: `test: WallpaperApiController MockMvc 테스트 추가 - 페이지 조회, 404 에러, 페이지 파라미터 (Task 5)`
+- Task 6: ClaudeApiClient 단위 테스트
+  - `ClaudeApiClientTest.java` 신규 생성 — API 키 미설정 예외 검증 2개 테스트
+  - `ErrorResponseTest.java` 수정 — Spring 컨텍스트 격리를 위해 @MockBean GameRepository 추가
+  - git commit: `test: ClaudeApiClient 단위 테스트 - API 키 미설정 예외 검증 + ErrorResponseTest 컨텍스트 격리 수정 (Task 6)`
+
+**결과:**
+- 전체 서버 테스트 50개 모두 PASS (BUILD SUCCESSFUL)
+- 커밋 6개 생성 (sprint6 브랜치)
+- 신규/수정 파일: WallpaperSearchService, WallpaperRepository, WallpaperApiController, WallpaperLikeApiController, WallpaperRecommendApiController, error/ 패키지 3개, 테스트 6개
+
+---
