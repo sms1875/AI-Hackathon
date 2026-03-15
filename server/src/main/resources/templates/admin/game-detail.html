@@ -101,11 +101,12 @@
             <span class="text-muted small"
                   th:text="'분석일: ' + #temporals.format(latestStrategy.analyzedAt, 'yyyy-MM-dd HH:mm')">-</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary" id="btnReanalyze"
-                  th:data-game-id="${game.id}">
+          <button type="button" class="btn btn-warning btn-sm"
+                  th:onclick="'reanalyze(' + ${game.id} + ')'">
             <i class="bi bi-robot me-1"></i>재분석
           </button>
         </div>
+        <div id="reanalyzeStatus" class="alert" style="display:none;"></div>
         <textarea class="form-control font-monospace" rows="15"
                   style="font-size: 0.85rem;" th:text="${latestStrategy.strategyJson}"></textarea>
 
@@ -123,12 +124,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <!-- 재분석 진행 표시 -->
-        <div id="analyzeDetailProgress" class="mt-3 d-none text-center">
-          <div class="spinner-border spinner-border-sm text-primary me-2"></div>
-          <span class="text-muted small">재분석 중... (최대 60초)</span>
         </div>
       </div>
     </div>
@@ -191,47 +186,76 @@
         });
     });
 
-    // AI 분석 버튼 공통 핸들러
-    function triggerAnalyze(btn) {
-      const gameUrl = /*[[${game.url}]]*/ '';
+    // AI 분석 버튼 공통 핸들러 (전략 없는 경우)
+    document.getElementById('btnAnalyzeDetail')?.addEventListener('click', function() {
+      const btn = this;
       btn.disabled = true;
       document.getElementById('analyzeDetailProgress').classList.remove('d-none');
 
-      fetch('/admin/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: gameUrl, gameId: gameId })
-      })
-      .then(r => {
-        if (!r.ok) throw new Error(r.status);
-        return r.json();
-      })
-      .then(data => {
-        document.getElementById('analyzeDetailProgress').classList.add('d-none');
-        const resultEl = document.getElementById('strategyResult');
-        if (resultEl) {
-          resultEl.classList.remove('d-none');
-          document.getElementById('strategyJsonArea').value = JSON.stringify(data.strategy, null, 2);
-        } else {
-          // 이미 전략이 있는 경우 페이지 새로고침
-          location.reload();
-        }
-        btn.disabled = false;
+      fetch(`/admin/games/${gameId}/analyze`, {method: 'POST'})
+      .then(() => {
+        const timer = setInterval(() => {
+          fetch(`/admin/games/${gameId}/analyze/status`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.status === 'COMPLETED') {
+              clearInterval(timer);
+              document.getElementById('analyzeDetailProgress').classList.add('d-none');
+              const resultEl = document.getElementById('strategyResult');
+              if (resultEl) {
+                resultEl.classList.remove('d-none');
+                const strategyJson = typeof data.strategy === 'string'
+                    ? data.strategy : JSON.stringify(data.strategy, null, 2);
+                document.getElementById('strategyJsonArea').value = strategyJson;
+              } else {
+                location.reload();
+              }
+              btn.disabled = false;
+            } else if (data.status === 'FAILED') {
+              clearInterval(timer);
+              document.getElementById('analyzeDetailProgress').classList.add('d-none');
+              alert('AI 분석 실패: ' + data.error);
+              btn.disabled = false;
+            }
+          });
+        }, 2000);
       })
       .catch(err => {
         document.getElementById('analyzeDetailProgress').classList.add('d-none');
-        alert('AI 분석 실패: ' + err.message);
+        alert('AI 분석 시작 실패: ' + err.message);
         btn.disabled = false;
       });
+    });
+
+    // 재분석 함수 (전략이 있는 경우)
+    function reanalyze(gameId) {
+      if (!confirm('재분석 시 새 전략이 생성됩니다. 기존 전략은 이력에 보존됩니다. 계속하시겠습니까?')) return;
+
+      const statusEl = document.getElementById('reanalyzeStatus');
+      statusEl.textContent = 'AI 재분석 시작...';
+      statusEl.className = 'alert alert-info';
+      statusEl.style.display = 'block';
+
+      fetch(`/admin/games/${gameId}/analyze`, {method: 'POST'})
+      .then(() => {
+        const timer = setInterval(() => {
+          fetch(`/admin/games/${gameId}/analyze/status`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.status === 'COMPLETED') {
+              clearInterval(timer);
+              statusEl.textContent = '재분석 완료! 페이지를 새로고침합니다.';
+              statusEl.className = 'alert alert-success';
+              setTimeout(() => location.reload(), 1500);
+            } else if (data.status === 'FAILED') {
+              clearInterval(timer);
+              statusEl.textContent = '재분석 실패: ' + data.error;
+              statusEl.className = 'alert alert-danger';
+            }
+          });
+        }, 2000);
+      });
     }
-
-    document.getElementById('btnAnalyzeDetail')?.addEventListener('click', function() {
-      triggerAnalyze(this);
-    });
-
-    document.getElementById('btnReanalyze')?.addEventListener('click', function() {
-      triggerAnalyze(this);
-    });
   </script>
 </main>
 </body>
