@@ -4,6 +4,7 @@ import com.gamepaper.admin.dto.GameListItem;
 import com.gamepaper.domain.crawler.CrawlingLogRepository;
 import com.gamepaper.domain.game.Game;
 import com.gamepaper.domain.game.GameRepository;
+import com.gamepaper.domain.strategy.CrawlerStrategyRepository;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ public class AdminGameController {
     private final GameRepository gameRepository;
     private final WallpaperRepository wallpaperRepository;
     private final CrawlingLogRepository crawlingLogRepository;
+    private final CrawlerStrategyRepository strategyRepository;
 
     // 게임 목록
     @GetMapping
@@ -95,9 +97,15 @@ public class AdminGameController {
         // 크롤링 로그
         var logs = crawlingLogRepository.findAllByGameIdOrderByStartedAtDesc(id);
 
+        // 파싱 전략 (버전 내림차순)
+        var strategies = strategyRepository.findAllByGameIdOrderByVersionDesc(id);
+        var latestStrategy = strategies.isEmpty() ? null : strategies.get(0);
+
         model.addAttribute("game", game);
         model.addAttribute("wallpapers", wallpapers);
         model.addAttribute("logs", logs);
+        model.addAttribute("strategies", strategies);
+        model.addAttribute("latestStrategy", latestStrategy);
         return "admin/game-detail";
     }
 }
