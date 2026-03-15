@@ -628,3 +628,61 @@
 - PR: https://github.com/sms1875/AI-Hackathon/pull/5
 
 ---
+
+### 37. Sprint 6 계획 수립
+**요청:** Sprint 6 계획을 수립해달라 (Phase 3: 리팩토링 — 클라이언트 캐시, 에러 처리, 무한 스크롤, 테스트 보강, 코드 리뷰 이슈 해소)
+
+**수행 작업:**
+- docs/ROADMAP.md 분석 — Sprint 1~5 완료, Sprint 6 Phase 3 리팩토링 대상 파악
+- writing-plans 스킬 참조
+- 서버/클라이언트 기존 코드 파악: WallpaperApiController, WallpaperSearchService, RecommendationService, ClaudeApiClient, GameRepository, WallpaperProvider, WallpaperScreen, handle_error.dart
+- Sprint 5 코드 리뷰 이슈 (I-1 ObjectMapper, I-2 findAllTagged 전체 스캔, I-3 컨트롤러 혼재) 반영
+- docs/sprint/sprint6.md 작성 (Task 1~10, 10개 태스크)
+- 에이전트 메모리 project_state.md 업데이트
+
+**결과:**
+- docs/sprint/sprint6.md 생성 완료
+- Task 구성:
+  - Task 1: Sprint 5 코드 리뷰 이슈 해소 (I-1~I-3)
+  - Task 2: 서버 에러 응답 표준화 (GlobalExceptionHandler + ErrorCode)
+  - Task 3: WallpaperSearchService 단위 테스트 강화
+  - Task 4: RecommendationService 단위 테스트 강화
+  - Task 5: WallpaperApiController MockMvc 테스트
+  - Task 6: ClaudeApiClient 단위 테스트
+  - Task 7: 클라이언트 AppError 구조화 + 에러 코드 매핑
+  - Task 8: SharedPreferences 영속 캐시 + 오프라인 모드
+  - Task 9: 무한 스크롤 페이지네이션 (PageView → GridView + ScrollController)
+  - Task 10: GitHub Actions 전체 검증
+
+---
+
+## 2026-03-15
+
+### 38. Sprint 6 Flutter Task 7~9 구현
+**요청:** Sprint 6 Flutter Task 7~9를 순서대로 구현 (Flutter 앱 경로: D:\work\GamePaper\client)
+
+**수행 작업:**
+- Task 7: AppError 구조화 + GameRepository 에러 처리 통합 + handle_error.dart 개선
+  - `client/lib/errors/app_error.dart` 생성 — AppError 클래스, AppErrorType enum, fromServerJson/network/timeout factory
+  - `client/lib/repositories/game_repository.dart` 수정 — 모든 API 메서드에 TimeoutException/SocketException → AppError 변환 적용
+  - `client/lib/utils/handle_error.dart` 수정 — AppError 타입 분기 처리, 레거시 문자열 fallback 유지
+  - flutter analyze 확인 후 커밋
+- Task 8: LocalCache (SharedPreferences TTL 캐시) + 게임 목록 영속 캐시 + 오프라인 배너
+  - `client/lib/cache/local_cache.dart` 생성 — SharedPreferences 기반 TTL 캐시 (get/set/remove)
+  - `client/lib/repositories/game_repository.dart` 수정 — fetchGameList 캐시 우선 전략 + onRefresh 콜백 + getWallpapersForPage 1시간 TTL 캐시
+  - `client/lib/providers/home_provider.dart` 수정 — onRefresh 콜백 연결, isOffline 상태 필드, AppError.network 감지
+  - `client/lib/screens/home_screen.dart` 수정 — 오프라인 배너 위젯 추가, ListView → Column+Expanded 구조로 변경
+  - flutter analyze 확인 후 커밋
+- Task 9: WallpaperProvider 무한 스크롤 + WallpaperScreen PageView → GridView+ScrollController
+  - `client/lib/providers/wallpaper_provider.dart` 전면 재작성 — _wallpapers List, isLoading/hasMore 상태, loadInitial/loadNextPage/_loadPage 메서드
+  - `client/lib/screens/wallpaper_screen.dart` 전면 재작성 — PageController/SmoothPageIndicator 제거, ScrollController 기반 무한 스크롤 GridView, _buildGrid() 헬퍼 메서드
+  - flutter analyze 확인 후 커밋
+
+**결과:**
+- `/d/work/GamePaper` 저장소 커밋 3개 생성
+  - `feat: AppError 구조화 + GameRepository 에러 처리 통합 + handle_error 코드 기반 전환 (Task 7)`
+  - `feat: SharedPreferences 영속 캐시 + 오프라인 모드 안내 구현 (Task 8)`
+  - `feat: WallpaperProvider 무한 스크롤 + WallpaperScreen PageView → GridView 교체 (Task 9)`
+- flutter analyze 기존 파일 info 5개만 남음 (신규 파일 에러 없음)
+
+---
