@@ -2,7 +2,12 @@ spring:
   datasource:
     url: jdbc:sqlite:${STORAGE_ROOT:/app}/gamepaper.db
     driver-class-name: org.sqlite.JDBC
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-local.sql
   jpa:
+    defer-datasource-initialization: true
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     hibernate:
       ddl-auto: update
@@ -14,3 +19,19 @@ spring:
 storage:
   root: ${STORAGE_ROOT:/app/storage}
   base-url: ${BASE_URL:http://localhost:8080}
+
+crawler:
+  schedule:
+    delay-ms: 21600000  # 6시간 (ms). 테스트 시 60000(1분)으로 변경 가능
+
+selenium:
+  hub-url: ${SELENIUM_HUB_URL:http://localhost:4444}
+
+game:
+  id:
+    genshin: 1
+    mabinogi: 2
+    maplestory: 3
+    nikke: 4
+    ffxiv: 5
+    blackdesert: 6

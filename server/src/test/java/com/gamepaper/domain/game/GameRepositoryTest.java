@@ -17,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     "spring.datasource.url=jdbc:sqlite::memory:",
     "spring.datasource.driver-class-name=org.sqlite.JDBC",
     "spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect",
-    "spring.jpa.hibernate.ddl-auto=create-drop"
+    "spring.jpa.hibernate.ddl-auto=create-drop",
+    "spring.sql.init.mode=never"
 })
 class GameRepositoryTest {
 
