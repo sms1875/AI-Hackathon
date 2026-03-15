@@ -11,6 +11,11 @@ services:
       - STORAGE_ROOT=/app/storage
       - BASE_URL=http://localhost:8080
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - SELENIUM_HUB_URL=http://selenium:4444
+      - CRAWLER_SCHEDULE_DELAY_MS=${CRAWLER_SCHEDULE_DELAY_MS:-21600000}
+    depends_on:
+      selenium:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/games"]
@@ -18,3 +23,20 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+
+  selenium:
+    image: selenium/standalone-chrome:latest
+    shm_size: "2g"
+    ports:
+      - "4444:4444"
+      - "7900:7900"  # VNC (선택적 디버깅용)
+    environment:
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_SESSION_REQUEST_TIMEOUT=300
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped

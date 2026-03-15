@@ -8,7 +8,10 @@ group = 'com.gamepaper'
 version = '0.0.1-SNAPSHOT'
 
 // Windows 한글 경로 인코딩 문제 우회: 빌드 출력 디렉토리를 ASCII 경로로 지정
-layout.buildDirectory = file('C:/temp/gamepaper-build')
+// 로컬 Windows 전용 설정 — CI(Linux)에서는 적용되지 않음
+if (System.properties['os.name'].toLowerCase(Locale.ROOT).contains('windows')) {
+    layout.buildDirectory = file('C:/temp/gamepaper-build')
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -24,6 +27,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.xerial:sqlite-jdbc:3.45.1.0'
     implementation 'org.hibernate.orm:hibernate-community-dialects:6.4.4.Final'
+    // BlurHash 생성
+    implementation 'io.trbl:blurhash:1.0.0'
+    // 크롤러: Jsoup (정적 페이지)
+    implementation 'org.jsoup:jsoup:1.17.2'
+    // 크롤러: Selenium (동적 페이지)
+    implementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
