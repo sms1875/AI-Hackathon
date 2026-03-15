@@ -27,6 +27,13 @@ public class Game {
     @Column(length = 20)
     private GameStatus status = GameStatus.ACTIVE;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "analysis_status", length = 20)
+    private AnalysisStatus analysisStatus = AnalysisStatus.PENDING;
+
+    @Column(name = "analysis_error", length = 500)
+    private String analysisError;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -42,5 +49,6 @@ public class Game {
         this.name = name;
         this.url = url;
         this.status = GameStatus.ACTIVE;
+        this.analysisStatus = AnalysisStatus.PENDING;
     }
 }
