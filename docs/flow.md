@@ -590,3 +590,20 @@
 - 새 API: GET /api/wallpapers/search, GET /api/tags, POST /api/wallpapers/{id}/like, GET /api/wallpapers/recommended
 
 ---
+
+### 35. Sprint 5 Flutter 클라이언트 구현 (Task 6~8)
+**요청:** docs/sprint/sprint5.md Task 6~8을 구현해달라 (Flutter 앱: /d/work/GamePaper/client)
+
+**수행 작업:**
+- Task 6: Wallpaper 모델에 tags/likeCount 필드 추가(dart:convert로 JSON 파싱), ApiConfig에 searchUrl/tagsUrl/recommendedUrl/likeUrl 추가, GameRepository에 fetchTags/searchByTags/fetchRecommended/toggleLike 메서드 추가, Flutter 레포 커밋
+- Task 7: DeviceId 유틸리티(SharedPreferences 기반) 구현, TagFilterProvider/RecommendationProvider 구현, TagFilterChips 위젯(수평 스크롤 FilterChip 목록) 구현, RecommendedSection 위젯(홈 화면 추천 가로 스크롤 섹션) 구현, WallpaperCard를 StatefulWidget으로 교체하여 좋아요 버튼 추가, WallpaperScreen에 MultiProvider + TagFilterChips 통합, HomeScreen에 RecommendationProvider + RecommendedSection 삽입, pubspec.yaml에 shared_preferences 추가, Flutter 레포 커밋
+- Task 8: flutter analyze 실행 (에러 없음, info 경고 5개는 기존 코드), docs/sprint/sprint5/deploy.md 작성, 서버 레포 커밋
+
+**결과:**
+- Sprint 5 Flutter Task 6~8 구현 완료
+- flutter analyze 에러 없음
+- 새 파일: utils/device_id.dart, providers/tag_filter_provider.dart, providers/recommendation_provider.dart, widgets/wallpaper/tag_filter_chips.dart, widgets/home/recommended_section.dart, docs/sprint/sprint5/deploy.md
+- Flutter 레포 커밋 2개(Task 6, Task 7)
+- 서버 레포 커밋 1개(Task 8 deploy.md)
+
+---
