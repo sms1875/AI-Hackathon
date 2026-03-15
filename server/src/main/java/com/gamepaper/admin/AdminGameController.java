@@ -1,10 +1,13 @@
 package com.gamepaper.admin;
 
 import com.gamepaper.admin.dto.GameListItem;
+import com.gamepaper.domain.crawler.CrawlingLogRepository;
 import com.gamepaper.domain.game.Game;
 import com.gamepaper.domain.game.GameRepository;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,7 @@ public class AdminGameController {
 
     private final GameRepository gameRepository;
     private final WallpaperRepository wallpaperRepository;
+    private final CrawlingLogRepository crawlingLogRepository;
 
     // 게임 목록
     @GetMapping
@@ -74,5 +78,26 @@ public class AdminGameController {
         gameRepository.deleteById(id);
         ra.addFlashAttribute("message", "게임이 삭제되었습니다.");
         return "redirect:/admin/games";
+    }
+
+    // 게임 상세 페이지
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        Game game = gameRepository.findById(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "게임을 찾을 수 없습니다."));
+
+        // 배경화면 목록 (최신순, 최대 100개)
+        var pageable = PageRequest.of(0, 100,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+        var wallpapers = wallpaperRepository.findAllByGameId(id, pageable).getContent();
+
+        // 크롤링 로그
+        var logs = crawlingLogRepository.findAllByGameIdOrderByStartedAtDesc(id);
+
+        model.addAttribute("game", game);
+        model.addAttribute("wallpapers", wallpapers);
+        model.addAttribute("logs", logs);
+        return "admin/game-detail";
     }
 }
