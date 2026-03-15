@@ -399,6 +399,27 @@
 
 ---
 
+### Sprint 3 마무리 (sprint-close)
+**요청:** Sprint 3 마무리 작업 수행 (ROADMAP 업데이트, 검증 실행, 코드 리뷰, 검증 보고서, PR 생성)
+
+**수행 작업:**
+- Gradle clean test 실행 → 22개 테스트 전체 통과 확인
+- docs/ROADMAP.md Sprint 3 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 25% → 37% 갱신
+- docs/sprint/sprint3/code-review.md 작성 (Critical 0, Important 3, Suggestion 4)
+- docs/sprint/sprint3/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint3.md 검증 결과 링크 추가
+- docs/deploy.md Sprint 3 배포 가이드 및 자동/수동 검증 항목 추가
+- README.md Phase 2 진행 중 상태 반영
+- GitHub PR 생성: sprint3 → master
+
+**결과:**
+- 테스트: 22개 전체 PASS (AdminAnalyzeApiControllerTest 2, GameApiControllerTest 2, CrawlerStrategyParserTest 4, ImageProcessorTest 5, GameRepositoryTest 2, LocalStorageServiceTest 7)
+- 검증 보고서: docs/sprint/sprint3/validation-report.md
+- 코드 리뷰: docs/sprint/sprint3/code-review.md
+- PR: (아래 참조)
+
+---
+
 ### Sprint 3 Task 4~7 구현
 **요청:** Sprint 3 구현 Task 4~7을 순서대로 구현
 

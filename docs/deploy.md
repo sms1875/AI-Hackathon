@@ -4,6 +4,26 @@
 
 ---
 
+## Sprint 3 배포 가이드
+
+### 추가된 환경변수
+
+```
+# Claude API 키 (없으면 데모 모드로 동작)
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Claude 모델 설정 (선택, 기본값: claude-3-5-sonnet-20241022)
+CLAUDE_MODEL=claude-3-5-sonnet-20241022
+```
+
+`server/.env` 파일에 위 항목을 추가하세요. `ANTHROPIC_API_KEY` 미설정 시 `/admin/games/new`의 AI 분석 버튼은 데모 전략을 반환합니다.
+
+### 관리자 UI 접속
+
+서버 기동 후 `http://localhost:8080/admin` 으로 접속합니다.
+
+---
+
 ## Sprint 2 배포 가이드
 
 ### 사전 준비
@@ -57,6 +77,16 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
 - ✅ Selenium 서비스 docker-compose.yml에 추가 (shm_size 2g, 헬스체크)
 - ✅ 게임 초기 데이터 SQL 작성 (6개 게임, INSERT OR IGNORE)
 - ✅ Flutter 앱 Firebase Storage → 서버 REST API 전환 (별도 레포 커밋: 25aaf87)
+
+### Sprint 3 (신규)
+
+- ✅ Gradle clean test 전체 통과 (22개 테스트: AdminAnalyzeApiControllerTest 2, GameApiControllerTest 2, CrawlerStrategyParserTest 4, ImageProcessorTest 5, GameRepositoryTest 2, LocalStorageServiceTest 7)
+- ✅ CrawlerStrategy 엔티티 + Repository 구현 (파싱 전략 버전 관리)
+- ✅ ClaudeApiClient 구현 (Spring RestClient, API 키 미설정 시 IllegalStateException)
+- ✅ CrawlerStrategyParser 구현 (JSON 코드 블록 추출, 필수 필드 검증)
+- ✅ AdminAnalyzeApiController 구현 (POST /admin/api/analyze, 데모 모드 지원)
+- ✅ LocalStorageService.listFiles() 구현 (Sprint 1 미구현 항목 완성)
+- ✅ Thymeleaf 관리자 UI 4페이지 구현 (/admin, /admin/games, /admin/games/new, /admin/games/{id})
 
 ---
 
@@ -122,6 +152,45 @@ CRAWLER_SCHEDULE_DELAY_MS=21600000   # 6시간 (테스트: 60000 = 1분)
 
 - ⬜ PR 생성 후 CI 통과 확인
   - URL: https://github.com/sms1875/AI-Hackathon/actions
+
+---
+
+## Sprint 3 수동 검증 항목
+
+### Docker 환경 재빌드
+
+- ⬜ `docker compose up --build` — Sprint 3 코드 반영 후 서버 정상 기동
+  ```bash
+  cd server/
+  docker compose up --build
+  # 확인: "Started GamepaperApplication" 로그 출력
+  ```
+
+### 관리자 UI 브라우저 검증
+
+- ⬜ `http://localhost:8080/admin` 대시보드 접속 — 요약 카드 4개, 크롤링 로그 타임라인 표시 확인
+
+- ⬜ `http://localhost:8080/admin/games` 게임 목록 — 게임 테이블, 상태 뱃지, 액션 버튼 표시 확인
+
+- ⬜ `http://localhost:8080/admin/games/new` 게임 등록 폼 — 게임명/URL 입력, AI 분석 버튼 동작 확인
+
+- ⬜ `http://localhost:8080/admin/games/{id}` 게임 상세 — 3탭(배경화면/파싱전략/크롤링로그) 전환 확인
+
+### AI 분석 API 검증
+
+- ⬜ 데모 모드 AI 분석 테스트 (ANTHROPIC_API_KEY 미설정)
+  ```bash
+  curl -s -X POST http://localhost:8080/admin/api/analyze \
+    -H "Content-Type: application/json" \
+    -d '{"url":"https://example.com"}' | python -m json.tool
+  # 예상: {"strategy": {...}, "warning": "ANTHROPIC_API_KEY가 설정되지 않아..."}
+  ```
+
+- ⬜ 수동 크롤링 트리거 API
+  ```bash
+  curl -s -X POST http://localhost:8080/admin/api/games/1/crawl
+  # 예상: {"message": "크롤링을 시작했습니다."}
+  ```
 
 ---
 
