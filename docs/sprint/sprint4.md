@@ -12,6 +12,13 @@
 
 ---
 
+## 검증 결과
+
+- [검증 보고서](sprint4/validation-report.md)
+- [코드 리뷰](sprint4/code-review.md)
+
+---
+
 ## Sprint 3 코드 리뷰 이슈 해소 (선행 작업)
 
 Sprint 3 코드 리뷰에서 제기된 이슈를 Task 1에서 먼저 해소합니다:

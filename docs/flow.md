@@ -507,6 +507,27 @@
 
 ## 2026-03-15
 
+### 32. Sprint 4 마무리 (sprint-close)
+**요청:** Sprint 4 마무리 작업 수행 (ROADMAP 업데이트, 검증 실행, 코드 리뷰, 검증 보고서, PR 생성)
+
+**수행 작업:**
+- Gradle compileJava + compileTestJava BUILD SUCCESSFUL 확인
+- docs/ROADMAP.md Sprint 4 상태 `📋 예정` → `✅ 완료` 업데이트, 진행률 37% → 50% 갱신
+- docs/sprint/sprint4/code-review.md 작성 (Critical 0, Important 3, Suggestion 4)
+- docs/sprint/sprint4/validation-report.md 작성 (자동/수동 검증 항목 구분)
+- docs/sprint/sprint4.md 검증 결과 링크 추가
+- docs/deploy.md Sprint 4 배포 가이드 및 자동/수동 검증 항목 추가
+- README.md Phase 2 Sprint 4 완료 상태 반영
+- GitHub PR 생성: sprint4 → master
+
+**결과:**
+- 빌드 검증: BUILD SUCCESSFUL (compileJava, compileTestJava)
+- 검증 보고서: docs/sprint/sprint4/validation-report.md
+- 코드 리뷰: docs/sprint/sprint4/code-review.md
+- PR: (하단 참고)
+
+---
+
 ### 31. Sprint 4 Task 6~10 구현
 **요청:** Sprint 4 Task 6~10을 순서대로 구현
 
