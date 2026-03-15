@@ -625,6 +625,6 @@
 - 빌드 검증: BUILD SUCCESSFUL (compileJava, compileTestJava)
 - 검증 보고서: docs/sprint/sprint5/validation-report.md
 - 코드 리뷰: docs/sprint/sprint5/code-review.md
-- PR: (생성 예정)
+- PR: https://github.com/sms1875/AI-Hackathon/pull/5
 
 ---
