@@ -454,3 +454,53 @@
 - /admin/games/{id} 3탭 상세 페이지, AI 분석 API 구현 완료
 
 ---
+
+### Sprint 4 Task 1~5 구현
+**요청:** Sprint 4 Task 1~5를 순서대로 구현해달라
+
+**수행 작업:**
+- Task 1: Sprint 3 코드 리뷰 이슈 3건 해소
+  - GameStatus.INACTIVE 추가 (I-3)
+  - AppConfig에 @EnableAsync + asyncExecutor 스레드풀 추가 (I-1)
+  - ClaudeApiClient RestClient.Builder 빈 재사용으로 교체 (I-2)
+  - AdminGameController toggleStatus FAILED → INACTIVE 교체
+  - CrawlerScheduler.runSingleAsync(@Async) 메서드 추가
+  - AdminCrawlApiController new Thread() → crawlerScheduler.runSingleAsync() 교체
+- Task 2: AnalysisStatus 열거형 생성 + Game 엔티티 분석 상태 필드 추가 + 비동기 AnalysisService 구현
+- Task 3: AdminAnalyzeApiController 재설계 (POST/GET /admin/games/{id}/analyze 신규 엔드포인트) + AdminGameController createGame analyzeOnly 파라미터 지원
+- Task 4: game-new.html polling 스크립트 교체, game-detail.html 재분석 버튼 + polling 추가, game-list.html AI 분석 상태 뱃지 컬럼 추가, GameListItem DTO analysisStatus 필드 추가
+- Task 5: StrategyDto + GenericCrawlerExecutor 구현 (4가지 페이지네이션 타입 지원)
+
+**결과:**
+- Task 1 커밋: `bd46bfe` refactor: Sprint 3 코드 리뷰 이슈 해소
+- Task 2 커밋: `d33dcb4` feat: AnalysisStatus 열거형 및 비동기 AnalysisService 구현
+- Task 3 커밋: `ceb811a` feat: AI 분석 트리거 및 상태 polling API 구현
+- Task 4 커밋: `f3813da` feat: 프론트엔드 AI 분석 polling UI 연결
+- Task 5 커밋: `bbcbe69` feat: GenericCrawlerExecutor 구현 - 전략 JSON 기반 범용 크롤러
+- 모든 Task BUILD SUCCESSFUL 확인
+
+---
+
+### Sprint 4 계획 수립
+**요청:** Sprint 4 계획 수립 (AI 범용 크롤러 핵심 구현)
+
+**수행 작업:**
+- ROADMAP.md, Sprint 3 코드(ClaudeApiClient, AdminAnalyzeApiController, CrawlerStrategy, CrawlerScheduler, AbstractGameCrawler, AbstractSeleniumCrawler 등) 분석
+- writing-plans 스킬 형식 준수하여 10개 Task로 분할한 계획 문서 작성
+- docs/sprint/sprint4.md 생성
+
+**결과:**
+- Sprint 4 계획: `docs/sprint/sprint4.md`
+- Task 구성:
+  - Task 1: Sprint 3 코드 리뷰 이슈 해소 (I-1 @Async, I-2 RestClient.Builder, I-3 INACTIVE)
+  - Task 2: AnalysisStatus 열거형 + 비동기 AnalysisService
+  - Task 3: AI 분석 트리거 API + 상태 polling API
+  - Task 4: 프론트엔드 polling UI 연결 (game-new.html, game-detail.html, game-list.html)
+  - Task 5: GenericCrawlerExecutor 구현 (StrategyDto + 범용 실행기)
+  - Task 6: AdminCrawlApiController GenericCrawlerExecutor 연결 + 3회 실패 처리
+  - Task 7: 기존 6개 게임 DB 등록 DataInitializer
+  - Task 8: CrawlerScheduler GenericCrawlerExecutor 우선 실행 전략
+  - Task 9: 전체 빌드 + 통합 검증 + deploy.md
+  - Task 10: 기존 크롤러 클래스 제거 (검증 완료 후)
+
+---
