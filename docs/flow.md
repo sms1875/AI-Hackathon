@@ -768,3 +768,19 @@
 - 최종 상태: Sprint 6 완료, master 브랜치 안정
 
 ---
+
+### 42. 프로젝트 최종 정리
+**요청:** GamePaper AI 프로젝트의 최종 문서 정리 수행 (README.md 전면 재작성, docs/deploy.md 재작성, server/README.md 생성, flow.md 마지막 항목 추가, 최종 커밋)
+
+**수행 작업:**
+- `README.md` 전면 재작성 — 프로젝트 소개, 아키텍처 개요, 기술 스택, 전체 구현 기능 목록(서버/Flutter), 빠른 시작 가이드, API 엔드포인트 목록, 환경변수 설명, 테스트 실행 방법, 프로젝트 구조 포함
+- `docs/deploy.md` 전면 재작성 — Prerequisites, 서버/Flutter 앱 실행 방법, 기능별 테스트(curl 명령어 포함), Flutter 앱 수동 검증 항목, Sprint별 자동 검증 완료 항목, 트러블슈팅 가이드로 통합 재구성
+- `server/README.md` 신규 생성 — 서버 아키텍처, 패키지 구조 전체 설명, 환경변수 목록, 로컬 실행 방법(Docker/직접), 테스트 실행, CI/CD, 주요 설계 결정
+- `docs/flow.md` 항목 42 추가
+
+**결과:**
+- `README.md` — 완성도 높은 프로젝트 소개 문서로 재작성
+- `docs/deploy.md` — Sprint별 단편적 가이드 → 통합 배포/테스트 가이드로 재구성
+- `server/README.md` — 서버 전용 상세 가이드 신규 생성
+
+---
