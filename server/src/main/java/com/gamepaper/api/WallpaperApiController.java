@@ -30,6 +30,7 @@ public class WallpaperApiController {
     private final GameRepository gameRepository;
     private final WallpaperSearchService searchService;
     private final UserLikeRepository userLikeRepository;
+    private final RecommendationService recommendationService;
 
     @GetMapping("/{gameId}")
     public PagedResponse<WallpaperDto> getWallpapers(
@@ -108,5 +109,24 @@ public class WallpaperApiController {
             long likeCount = userLikeRepository.countByWallpaperId(id);
             return Map.of("liked", true, "likeCount", likeCount);
         }
+    }
+
+    /**
+     * 추천 배경화면 API.
+     * device-id 기반으로 좋아요 이력을 분석하여 유사 배경화면을 반환합니다.
+     *
+     * @param deviceId 기기 ID (device-id 헤더)
+     * @return 추천 배경화면 목록 (좋아요 이력 없으면 빈 배열)
+     */
+    @GetMapping("/recommended")
+    public List<WallpaperDto> getRecommended(
+            @RequestHeader(value = "device-id", required = false) String deviceId) {
+
+        if (deviceId == null || deviceId.isBlank()) {
+            return List.of(); // device-id 없으면 빈 목록 반환
+        }
+
+        List<Wallpaper> recommendations = recommendationService.recommend(deviceId);
+        return recommendations.stream().map(WallpaperDto::new).collect(Collectors.toList());
     }
 }
