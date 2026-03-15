@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -47,7 +49,9 @@ class WallpaperSearchApiTest {
     void search_단일태그_검색() throws Exception {
         Wallpaper wp = new Wallpaper(1L, "test.jpg", "http://example.com/test.jpg");
         wp.setTags("[\"dark\",\"landscape\"]");
-        when(wallpaperRepository.findAllTagged()).thenReturn(List.of(wp));
+        // I-2 해소 후 findAllTagged(Pageable) 사용
+        when(wallpaperRepository.findAllTagged(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(wp)));
 
         mockMvc.perform(get("/api/wallpapers/search")
                         .param("tags", "dark"))
