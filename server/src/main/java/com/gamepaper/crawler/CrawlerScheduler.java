@@ -38,7 +38,7 @@ public class CrawlerScheduler {
         log.info("크롤링 스케줄 완료");
     }
 
-    private void runSingle(GameCrawler crawler) {
+    public void runSingle(GameCrawler crawler) {
         Long gameId = crawler.getGameId();
         CrawlingLog logEntry = new CrawlingLog();
         logEntry.setGameId(gameId);
