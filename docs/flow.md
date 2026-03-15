@@ -416,7 +416,7 @@
 - 테스트: 22개 전체 PASS (AdminAnalyzeApiControllerTest 2, GameApiControllerTest 2, CrawlerStrategyParserTest 4, ImageProcessorTest 5, GameRepositoryTest 2, LocalStorageServiceTest 7)
 - 검증 보고서: docs/sprint/sprint3/validation-report.md
 - 코드 리뷰: docs/sprint/sprint3/code-review.md
-- PR: (아래 참조)
+- PR: https://github.com/sms1875/AI-Hackathon/pull/3
 
 ---
 
