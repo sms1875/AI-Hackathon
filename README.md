@@ -1,6 +1,7 @@
 # GamePaper AI
 
 [![CI](https://github.com/sms1875/AI-Hackathon/actions/workflows/ci.yml/badge.svg)](https://github.com/sms1875/AI-Hackathon/actions/workflows/ci.yml)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io%2Fsms1875%2Fgamepaper--server-blue?logo=docker)](https://github.com/sms1875/AI-Hackathon/pkgs/container/gamepaper-server)
 
 게임 공식 사이트의 배경화면을 AI로 자동 수집하여 모바일 기기에 적용하는 앱입니다.
 

@@ -131,16 +131,28 @@ push/PR 트리거
 [build-and-test]
     ├── Java 21 Temurin 설정
     ├── Gradle 의존성 캐시
-    ├── ./gradlew test jacocoTestReport
-    ├── 테스트 결과 아티팩트 업로드 (7일)
-    ├── JaCoCo HTML 리포트 아티팩트 업로드 (7일)
-    └── Step Summary에 커버리지 % 출력
+    ├── ./gradlew test (--continue) + jacocoTestReport
+    ├── 테스트 결과 아티팩트 업로드 (30일)
+    ├── JaCoCo HTML 리포트 아티팩트 업로드 (30일)
+    ├── JaCoCo XML 아티팩트 업로드 (30일)
+    └── Step Summary에 커버리지 %, 최소 기준(50%) 출력
     │
     ▼ (build-and-test 성공 시)
-[docker-build]
+[docker-publish]
     ├── Docker Buildx 설정
-    └── docker build -t gamepaper-server:ci .
+    ├── GHCR(ghcr.io) 로그인 (GITHUB_TOKEN)
+    ├── 메타데이터 설정 (branch, sha, latest 태그)
+    ├── docker build-push → ghcr.io/sms1875/gamepaper-server
+    └── Step Summary에 이미지 정보 출력
 ```
+
+### GHCR 이미지 태그 전략
+
+| 태그 | 조건 | 예시 |
+|------|------|------|
+| `latest` | master 브랜치 push | `ghcr.io/sms1875/gamepaper-server:latest` |
+| `sha-<hash>` | 모든 push | `ghcr.io/sms1875/gamepaper-server:sha-abc1234` |
+| `<branch>` | 브랜치 push | `ghcr.io/sms1875/gamepaper-server:master` |
 
 ### 트리거 조건
 

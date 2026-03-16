@@ -48,15 +48,23 @@ jobs:
         with:
           name: test-results
           path: server/build/reports/tests/
-          retention-days: 7
+          retention-days: 30
 
-      - name: JaCoCo 커버리지 리포트 업로드
+      - name: JaCoCo 커버리지 리포트 업로드 (HTML)
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-report
           path: server/build/reports/jacoco/test/html/
-          retention-days: 7
+          retention-days: 30
+
+      - name: JaCoCo 커버리지 리포트 업로드 (XML)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-xml
+          path: server/build/reports/jacoco/test/jacocoTestReport.xml
+          retention-days: 30
 
       - name: 커버리지 요약 출력
         if: always()
@@ -75,15 +83,21 @@ jobs:
               echo "| 테스트 메서드 수 | ${TEST_COUNT} |" >> $GITHUB_STEP_SUMMARY
               echo "| 커버된 명령어 | ${COVERED} / ${TOTAL} |" >> $GITHUB_STEP_SUMMARY
               echo "| 명령어 커버리지 | **${PCT}%** |" >> $GITHUB_STEP_SUMMARY
+              echo "| 최소 기준 | 50% |" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "> 상세 리포트: Actions > Artifacts > coverage-report" >> $GITHUB_STEP_SUMMARY
             fi
           else
             echo "### 테스트 커버리지" >> $GITHUB_STEP_SUMMARY
             echo "> JaCoCo XML 리포트를 찾을 수 없습니다." >> $GITHUB_STEP_SUMMARY
           fi
 
-  docker-build:
+  docker-publish:
     runs-on: ubuntu-latest
     needs: build-and-test
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: 코드 체크아웃
@@ -92,8 +106,40 @@ jobs:
       - name: Docker Buildx 설정
         uses: docker/setup-buildx-action@v3
 
-      - name: Docker 이미지 빌드 검증
+      - name: GitHub Container Registry 로그인
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker 메타데이터 설정
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/gamepaper-server
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+
+      - name: Docker 이미지 빌드 및 GHCR 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 빌드 결과 요약
         run: |
-          cd server
-          docker build --no-cache -t gamepaper-server:ci .
-          echo "Docker 빌드 성공: $(docker images gamepaper-server:ci --format '{{.Size}}')"
+          echo "### Docker 이미지 빌드 및 배포 완료" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 항목 | 값 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| 레지스트리 | ghcr.io |" >> $GITHUB_STEP_SUMMARY
+          echo "| 이미지 | ghcr.io/${{ github.repository_owner }}/gamepaper-server |" >> $GITHUB_STEP_SUMMARY
+          echo "| 태그 | latest, sha-${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 브랜치 | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
