@@ -38,7 +38,9 @@ jobs:
       - name: 빌드 및 테스트 (JaCoCo 커버리지 포함)
         run: |
           cd server
-          ./gradlew test jacocoTestReport --no-daemon
+          ./gradlew test --no-daemon --continue; TEST_EXIT=$?
+          ./gradlew jacocoTestReport --no-daemon || true
+          exit $TEST_EXIT
 
       - name: 테스트 결과 업로드
         uses: actions/upload-artifact@v4
@@ -61,22 +63,11 @@ jobs:
         run: |
           REPORT=server/build/reports/jacoco/test/jacocoTestReport.xml
           if [ -f "$REPORT" ]; then
-            # XML에서 INSTRUCTION 타입 counter 추출 (파일 전체 스캔)
-            MISSED=$(python3 -c "
-import xml.etree.ElementTree as ET
-tree = ET.parse('$REPORT')
-total_missed = sum(int(c.get('missed', 0)) for c in tree.iter('counter') if c.get('type') == 'INSTRUCTION')
-print(total_missed)
-")
-            COVERED=$(python3 -c "
-import xml.etree.ElementTree as ET
-tree = ET.parse('$REPORT')
-total_covered = sum(int(c.get('covered', 0)) for c in tree.iter('counter') if c.get('type') == 'INSTRUCTION')
-print(total_covered)
-")
+            MISSED=$(grep -o 'type="INSTRUCTION" missed="[0-9]*"' "$REPORT" | grep -o 'missed="[0-9]*"' | grep -o '[0-9]*' | awk '{s+=$1} END {print s}')
+            COVERED=$(grep -o 'type="INSTRUCTION" covered="[0-9]*"' "$REPORT" | grep -o 'covered="[0-9]*"' | grep -o '[0-9]*' | awk '{s+=$1} END {print s}')
             TOTAL=$((MISSED + COVERED))
             if [ "$TOTAL" -gt 0 ]; then
-              PCT=$(python3 -c "print(f'{$COVERED * 100 / $TOTAL:.1f}')")
+              PCT=$(awk "BEGIN {printf \"%.1f\", $COVERED * 100 / $TOTAL}")
               TEST_COUNT=$(find server/src/test -name "*.java" -exec grep -l "@Test" {} \; | xargs grep -h "@Test" | wc -l)
               echo "### 테스트 커버리지 요약" >> $GITHUB_STEP_SUMMARY
               echo "" >> $GITHUB_STEP_SUMMARY
@@ -87,7 +78,8 @@ print(total_covered)
               echo "| 명령어 커버리지 | **${PCT}%** |" >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "⚠️ JaCoCo XML 리포트를 찾을 수 없습니다." >> $GITHUB_STEP_SUMMARY
+            echo "### 테스트 커버리지" >> $GITHUB_STEP_SUMMARY
+            echo "> JaCoCo XML 리포트를 찾을 수 없습니다." >> $GITHUB_STEP_SUMMARY
           fi
 
   docker-build:

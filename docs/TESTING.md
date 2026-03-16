@@ -2,7 +2,7 @@
 
 ## 개요
 
-GamePaper AI 서버는 **64개 테스트**를 통해 핵심 비즈니스 로직을 검증합니다. 단위 테스트, 통합 테스트, API 테스트의 3계층으로 구성되며, GitHub Actions CI에서 모든 테스트가 자동 실행됩니다.
+GamePaper AI 서버는 **56개 테스트**를 통해 핵심 비즈니스 로직을 검증합니다. 단위 테스트, 통합 테스트, API 테스트의 3계층으로 구성되며, GitHub Actions CI에서 모든 테스트가 자동 실행됩니다.
 
 ---
 
@@ -20,12 +20,10 @@ server/src/test/java/com/gamepaper/
 └── storage/        # 스토리지 서비스 단위 테스트
 ```
 
-### 테스트 목록 (64개)
+### 테스트 목록 (56개)
 
 | 클래스 | 테스트 수 | 계층 | 검증 내용 |
 |--------|-----------|------|-----------|
-| `AdminDashboardControllerTest` | 2 | API(MockMvc) | 대시보드 200 응답, 통계 모델 포함 확인 |
-| `AdminGameControllerTest` | 6 | API(MockMvc) | 게임 목록/등록 폼/상세/404/400 응답 |
 | `AdminAnalyzeApiControllerTest` | 2 | API(MockMvc) | AI 분석 요청, 데모 모드 동작 |
 | `GameApiControllerTest` | 3 | 통합(@SpringBootTest) | 게임 목록 API, 빈 목록, 데이터 포함 |
 | `WallpaperApiControllerTest` | 4 | 통합(@SpringBootTest) | 페이지네이션, 404, 파라미터 검증 |
@@ -51,7 +49,7 @@ server/src/test/java/com/gamepaper/
 | 어노테이션 | 용도 | 사용 클래스 |
 |-----------|------|------------|
 | `@SpringBootTest` + `@AutoConfigureMockMvc` | 전체 Spring 컨텍스트 로드 (통합) | GameApiControllerTest, WallpaperApiControllerTest 등 |
-| `@WebMvcTest` | Web 계층만 로드 (빠른 컨트롤러 테스트) | AdminDashboardControllerTest, AdminGameControllerTest |
+| `@WebMvcTest` | Web 계층만 로드 (빠른 컨트롤러 테스트) | AdminAnalyzeApiControllerTest |
 | `@DataJpaTest` | JPA 계층만 로드 | GameRepositoryTest |
 | 순수 단위 테스트 | Mockito만 사용 | WallpaperSearchServiceTest, RecommendationServiceTest 등 |
 

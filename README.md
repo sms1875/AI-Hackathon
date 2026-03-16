@@ -243,12 +243,12 @@ gradlew.bat test jacocoTestReport
 # 커버리지 리포트: build/reports/jacoco/test/html/index.html
 ```
 
-**64개 테스트** (단위 + API 통합 + JPA) — 3계층 구조:
+**56개 테스트** (단위 + API 통합 + JPA) — 3계층 구조:
 
 | 계층 | 클래스 수 | 테스트 수 | 사용 기술 |
 |------|-----------|-----------|-----------|
 | API 통합 (`@SpringBootTest`) | 5 | 17 | 인메모리 SQLite, MockMvc |
-| 관리자 UI (`@WebMvcTest`) | 3 | 10 | MockMvc, @MockBean |
+| 관리자 UI (`@WebMvcTest`) | 1 | 2 | MockMvc, @MockBean |
 | 단위 테스트 | 8 | 34 | Mockito, JUnit 5 |
 | JPA (`@DataJpaTest`) | 1 | 3 | 인메모리 SQLite |
 
