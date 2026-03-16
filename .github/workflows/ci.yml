@@ -63,11 +63,10 @@ jobs:
         run: |
           REPORT=server/build/reports/jacoco/test/jacocoTestReport.xml
           if [ -f "$REPORT" ]; then
-            MISSED=$(grep -o 'type="INSTRUCTION" missed="[0-9]*"' "$REPORT" | grep -o 'missed="[0-9]*"' | grep -o '[0-9]*' | awk '{s+=$1} END {print s}')
-            COVERED=$(grep -o 'type="INSTRUCTION" covered="[0-9]*"' "$REPORT" | grep -o 'covered="[0-9]*"' | grep -o '[0-9]*' | awk '{s+=$1} END {print s}')
+            read MISSED COVERED <<< $(awk -F'"' '/type="INSTRUCTION"/{for(i=1;i<=NF;i++){if($i=="missed"){m+=$(i+1)}if($i=="covered"){c+=$(i+1)}}} END{print m" "c}' "$REPORT")
             TOTAL=$((MISSED + COVERED))
             if [ "$TOTAL" -gt 0 ]; then
-              PCT=$(awk "BEGIN {printf \"%.1f\", $COVERED * 100 / $TOTAL}")
+              PCT=$(awk "BEGIN {printf \"%.1f\", ${COVERED} * 100 / ${TOTAL}}")
               TEST_COUNT=$(find server/src/test -name "*.java" -exec grep -l "@Test" {} \; | xargs grep -h "@Test" | wc -l)
               echo "### 테스트 커버리지 요약" >> $GITHUB_STEP_SUMMARY
               echo "" >> $GITHUB_STEP_SUMMARY
