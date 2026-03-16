@@ -850,3 +850,22 @@
 **결과:**
 - CI green 상태로 복구 예정 (푸시 후 GitHub Actions 확인 필요)
 - JaCoCo 커버리지 % Step Summary에 표시 예정
+
+### 47. 검증 계획 점수 개선 - GHCR 자동 배포 및 커버리지 아티팩트 강화
+**요청:** 검증 계획 2/15점 (테스트 전략 1/8, CI/CD 1/7). CI에서 커버리지 리포트 없음, Docker 레지스트리 푸시 없음 지적 받아 개선 요청
+
+**수행 작업:**
+- ci.yml: docker-build → docker-publish 잡으로 전환
+  - GHCR(ghcr.io) 자동 로그인 및 이미지 푸시 (docker/login-action, build-push-action)
+  - 태그 전략: latest(master), sha-, branch 태그 자동 생성
+  - GHA 빌드 캐시 적용
+- ci.yml: 아티팩트 보존 7일 → 30일 연장
+- ci.yml: JaCoCo XML 아티팩트 별도 업로드 추가
+- ci.yml: Step Summary에 최소 기준(50%) 표시 추가
+- README.md: GHCR 이미지 배지 추가
+- TESTING.md: CI/CD 파이프라인 구성 및 GHCR 태그 전략 문서화
+
+**결과:**
+- CI green (build-and-test + docker-publish 모두 통과)
+- ghcr.io/sms1875/gamepaper-server:latest 이미지 자동 게시
+- 커버리지 리포트 (HTML, XML) 30일 보존으로 아티팩트 강화
