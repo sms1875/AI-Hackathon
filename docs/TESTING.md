@@ -219,12 +219,15 @@ curl http://localhost:4444/wd/hub/status
 | 브랜치 | master |
 | 빌드 결과 | ✅ BUILD SUCCESSFUL |
 | 테스트 클래스 | 15개 |
-| 테스트 메서드 | 56개 |
+| 테스트 메서드 | 56개 (56/56 PASS) |
+| 명령어 커버리지 | 32.3% (1,425 / 4,415) |
+| 커버리지 게이트 (50%) | ⬜ FAIL (크롤러/Selenium 클래스 제외 미적용으로 낮음) |
 | JaCoCo 리포트 | ✅ 생성됨 (Artifacts: `coverage-report`) |
-| Docker 이미지 빌드 | ✅ 성공 |
+| Docker 이미지 빌드 | ✅ 성공 (ghcr.io/sms1875/gamepaper-server:latest) |
 | CI 전체 상태 | ✅ 전체 green |
 
-GitHub Actions 실행 ID: `23122490495`
+GitHub Actions 실행 ID: `23123405660`
+GitHub Actions URL: https://github.com/sms1875/AI-Hackathon/actions/runs/23123405660
 
 ---
 

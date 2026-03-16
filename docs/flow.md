@@ -869,3 +869,23 @@
 - CI green (build-and-test + docker-publish 모두 통과)
 - ghcr.io/sms1875/gamepaper-server:latest 이미지 자동 게시
 - 커버리지 리포트 (HTML, XML) 30일 보존으로 아티팩트 강화
+
+## 2026-03-16
+
+### 48. 해커톤 종합 점수 개선 — CI 강화, 코드 품질, 테스트 수 문서 통일
+**요청:** 해커톤 점수 68/100. 검증 계획 2/15점 병목 해소, 테스트 수 불일치(문서 50 vs 실제 56), 코드 품질 이슈 수정 요청
+
+**수행 작업:**
+- ci.yml Step 1-A: jacocoTestCoverageVerification 추가 — 커버리지 게이트(50%) PASS/FAIL을 GITHUB_ENV + Step Summary에 표시
+- ci.yml Step 1-B: docker-publish에 `if: github.ref == 'refs/heads/master' && github.event_name == 'push'` 추가 — master push 시에만 GHCR 푸시
+- AnalysisService Step 2-A: `new ObjectMapper()` → `private static final ObjectMapper OBJECT_MAPPER` static 상수화
+- WallpaperRepository Step 2-B: 미사용 `findAllTagged()` (무파라미터) dead code 제거
+- WallpaperLikeApiController Step 2-C: `toggleLike()`에 `@Transactional` 추가 (다중 DB 연산 원자성)
+- 문서 테스트 수 통일 Step 3: validation-report.md, deploy.md, server/README.md, code-review.md 모두 50→56 수정
+- validation-report.md: "CI 실행 증거" 섹션 신규 추가 (GitHub Actions URL, 커버리지 %, 테스트 결과)
+- TESTING.md: 최근 CI 실행 결과 테이블에 커버리지 32.3% 및 CI 실행 ID 23123405660 반영
+
+**결과:**
+- CI green (56/56 PASS, Docker 이미지 master 전용 푸시)
+- 실제 커버리지: 32.3% (1,425/4,415 명령어) — 게이트 FAIL이나 CI 빌드는 성공
+- GitHub Actions URL: https://github.com/sms1875/AI-Hackathon/actions/runs/23123405660

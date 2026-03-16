@@ -336,6 +336,16 @@ Sprint별 자동 검증이 완료된 항목입니다.
 - ✅ Flutter LocalCache (SharedPreferences TTL) 구현
 - ✅ Flutter WallpaperProvider 무한 스크롤 구현
 
+### Sprint 7 (코드 품질 개선)
+
+- ✅ `jacocoTestCoverageVerification` 커버리지 게이트 CI 통합 (Step Summary에 PASS/FAIL 표시)
+- ✅ docker-publish 브랜치 필터 — master push 시에만 GHCR 이미지 푸시
+- ✅ AnalysisService ObjectMapper static final 상수화
+- ✅ WallpaperRepository.findAllTagged() (무파라미터) dead code 제거
+- ✅ WallpaperLikeApiController.toggleLike() @Transactional 추가
+- ✅ CI 실행 증거: https://github.com/sms1875/AI-Hackathon/actions/runs/23123405660
+- ✅ 테스트 56/56 PASS, 커버리지 32.3% (게이트 FAIL — 크롤러 클래스 포함으로 낮음)
+
 ---
 
 ## 7. 트러블슈팅 가이드

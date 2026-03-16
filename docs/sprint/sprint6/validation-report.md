@@ -229,6 +229,30 @@ curl http://localhost:4444/wd/hub/status
 
 ---
 
+## CI 실행 증거 (2026-03-16)
+
+### 최신 CI 실행 결과
+
+| 항목 | 결과 |
+|------|------|
+| GitHub Actions URL | https://github.com/sms1875/AI-Hackathon/actions/runs/23123405660 |
+| 실행 ID | `23123405660` |
+| 브랜치 | master |
+| 빌드 결과 | ✅ BUILD SUCCESSFUL |
+| 테스트 메서드 | **56/56 PASS** (0 failures, 0 errors) |
+| 명령어 커버리지 | **32.3%** (1,425 / 4,415 명령어) |
+| 커버리지 게이트 (50%) | ⬜ FAIL (크롤러/Selenium 런타임 클래스 포함으로 낮음) |
+| Docker 이미지 | ✅ ghcr.io/sms1875/gamepaper-server:latest 푸시 완료 |
+| CI 전체 상태 | ✅ **green** |
+
+### 아티팩트
+
+- `test-results`: JUnit XML 결과 (30일 보관)
+- `coverage-report`: JaCoCo HTML 리포트 (30일 보관)
+- `coverage-report-xml`: JaCoCo XML 리포트 (30일 보관)
+
+---
+
 ## 5. CI/CD 검증
 
 ### GitHub Actions 워크플로우 구성 검토 (`.github/workflows/ci.yml`)
