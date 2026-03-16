@@ -199,6 +199,23 @@ curl http://localhost:4444/wd/hub/status
 
 ---
 
+## 최근 CI 실행 결과
+
+| 항목 | 결과 |
+|------|------|
+| 실행일 | 2026-03-16 |
+| 브랜치 | master |
+| 빌드 결과 | ✅ BUILD SUCCESSFUL |
+| 테스트 클래스 | 15개 |
+| 테스트 메서드 | 56개 |
+| JaCoCo 리포트 | ✅ 생성됨 (Artifacts: `coverage-report`) |
+| Docker 이미지 빌드 | ✅ 성공 |
+| CI 전체 상태 | ✅ 전체 green |
+
+GitHub Actions 실행 ID: `23122490495`
+
+---
+
 ## 한계 및 개선 계획
 
 | 항목 | 현재 상태 | 개선 방향 |
