@@ -17,12 +17,8 @@ public interface WallpaperRepository extends JpaRepository<Wallpaper, Long> {
     // 태그 미생성 배경화면 조회 (배치 태깅용)
     List<Wallpaper> findAllByTagsIsNull();
 
-    // 태그 기반 배경화면 검색 (인메모리 필터링)
+    // 태그 기반 배경화면 검색 (페이지 배치 방식, 인메모리 필터링)
     // SQLite의 JSON 함수 제한으로 인해 tags IS NOT NULL 인 전체 목록을 Java에서 필터링
-    @Query("SELECT w FROM Wallpaper w WHERE w.tags IS NOT NULL ORDER BY w.createdAt DESC")
-    List<Wallpaper> findAllTagged();
-
-    // I-2 해소: 페이지 배치 방식으로 전체 메모리 로드 방지
     @Query("SELECT w FROM Wallpaper w WHERE w.tags IS NOT NULL ORDER BY w.createdAt DESC")
     Page<Wallpaper> findAllTagged(Pageable pageable);
 }

@@ -266,7 +266,7 @@ curl -s "http://localhost:8080/api/wallpapers/1?page=0&size=12" | python -m json
 ```bash
 cd server/
 
-# 전체 테스트 (50개)
+# 전체 테스트 (56개)
 ./gradlew test
 
 # Windows 환경
@@ -276,7 +276,7 @@ gradlew.bat test
 ./gradlew compileJava compileTestJava
 ```
 
-예상 결과: `BUILD SUCCESSFUL` — 50개 테스트 전체 PASS
+예상 결과: `BUILD SUCCESSFUL` — 56개 테스트 전체 PASS
 
 ---
 
@@ -326,7 +326,7 @@ Sprint별 자동 검증이 완료된 항목입니다.
 
 ### Sprint 6
 
-- ✅ `./gradlew test` — BUILD SUCCESSFUL (50개 테스트 PASS)
+- ✅ `./gradlew test` — BUILD SUCCESSFUL (56개 테스트 PASS)
 - ✅ WallpaperSearchService ObjectMapper static 상수화 (I-1 해소)
 - ✅ WallpaperRepository.findAllTagged(Pageable) 추가 (I-2 해소)
 - ✅ WallpaperLikeApiController / WallpaperRecommendApiController 분리 (I-3 해소)

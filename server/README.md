@@ -174,7 +174,7 @@ docker run -d -p 4444:4444 --shm-size=2g selenium/standalone-chrome:latest
 ```bash
 cd server/
 
-# 전체 테스트 (50개)
+# 전체 테스트 (56개)
 ./gradlew test
 
 # 특정 테스트 클래스만 실행
@@ -193,16 +193,20 @@ gradlew.bat test
 |------------|------|------|
 | `WallpaperSearchServiceTest` | 8 | AND/OR 검색, JSON 파싱, 태그 빈도 분석 |
 | `RecommendationServiceTest` | 4 | 좋아요 이력 없음/있음, 중복 제외 |
-| `WallpaperApiControllerTest` | 3 | 페이지 조회, 404, 페이지 파라미터 |
+| `WallpaperApiControllerTest` | 4 | 페이지 조회, 404, 페이지 파라미터 |
 | `ClaudeApiClientTest` | 2 | API 키 미설정 예외 |
-| `ErrorResponseTest` | 2 | 404/400 구조화 에러 응답 |
+| `ErrorResponseTest` | 3 | 404/400 구조화 에러 응답 |
 | `AdminAnalyzeApiControllerTest` | 2 | AI 분석 API, 데모 모드 |
-| `GameApiControllerTest` | 2 | 게임 목록 API |
+| `GameApiControllerTest` | 3 | 게임 목록 API |
 | `CrawlerStrategyParserTest` | 4 | JSON 코드 블록 추출, 필수 필드 검증 |
 | `ImageProcessorTest` | 5 | BlurHash, 해상도, UUID 파일명, 확장자 |
-| `GameRepositoryTest` | 2 | 저장/조회, 상태별 필터 |
+| `GameRepositoryTest` | 3 | 저장/조회, 상태별 필터 |
 | `LocalStorageServiceTest` | 7 | 업로드, 삭제, URL, 파일 목록, 빈 디렉토리 |
-| **합계** | **50** | |
+| `BatchTaggingServiceTest` | 2 | API 키 미설정 동작 |
+| `TaggingServiceTest` | 2 | 태그 생성 서비스 |
+| `WallpaperSearchApiTest` | 3 | 검색 API MockMvc |
+| `LikeApiTest` | 4 | 좋아요 토글 API |
+| **합계** | **56** | |
 
 ---
 

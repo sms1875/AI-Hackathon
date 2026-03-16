@@ -3,7 +3,7 @@
 **리뷰 일자:** 2026-03-15
 **브랜치:** sprint6
 **변경 파일 수:** 15개 (서버 12개, docs 3개)
-**테스트 결과:** 50개 전체 PASS (BUILD SUCCESSFUL)
+**테스트 결과:** 56개 전체 PASS (BUILD SUCCESSFUL)
 
 ---
 

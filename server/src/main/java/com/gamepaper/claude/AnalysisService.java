@@ -24,6 +24,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AnalysisService {
 
+    private static final com.fasterxml.jackson.databind.ObjectMapper OBJECT_MAPPER =
+            new com.fasterxml.jackson.databind.ObjectMapper();
+
     private final ClaudeApiClient claudeApiClient;
     private final HtmlFetcher htmlFetcher;
     private final GameRepository gameRepository;
@@ -119,8 +122,7 @@ public class AnalysisService {
                 }
                 """;
         try {
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            com.fasterxml.jackson.databind.JsonNode node = mapper.readTree(demoJson);
+            com.fasterxml.jackson.databind.JsonNode node = OBJECT_MAPPER.readTree(demoJson);
             return new AnalyzeResponse(node, demoJson.trim());
         } catch (Exception e) {
             throw new RuntimeException("데모 전략 생성 실패", e);

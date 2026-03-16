@@ -5,6 +5,7 @@ import com.gamepaper.domain.like.UserLikeRepository;
 import com.gamepaper.domain.wallpaper.WallpaperRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,6 +31,7 @@ public class WallpaperLikeApiController {
      * @param deviceId 기기 ID (device-id 헤더)
      * @return {"liked": true/false, "likeCount": N}
      */
+    @Transactional
     @PostMapping("/{id}/like")
     public Map<String, Object> toggleLike(
             @PathVariable Long id,
